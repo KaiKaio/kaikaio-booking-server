@@ -19,22 +19,22 @@ class UserService extends Service {
   // 通过用户名获取用户信息
   async getUserByName(username) {
     const { app } = this;
-      try {
-        const result = await app.mysql.get('user', { username });
-        return result;
-      } catch (error) {
-        console.log(error);
-        return null;
-      }
+    try {
+      const result = await app.mysql.get('user', { username });
+      return result;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
   }
 
   async editUserInfo(params) {
-    const { ctx, app } = this;
+    const { app } = this;
     try {
-      let result = await app.mysql.update('user', {
-          ...params
+      const result = await app.mysql.update('user', {
+        ...params,
       }, {
-          id: params.id
+        id: params.id,
       });
       return result;
     } catch (error) {
@@ -43,13 +43,13 @@ class UserService extends Service {
     }
   }
 
-  async modifyPass (params) {
-    const { ctx, app } = this;
+  async modifyPass(params) {
+    const { app } = this;
     try {
-      let result = await app.mysql.update('user', {
-          ...params
+      const result = await app.mysql.update('user', {
+        ...params,
       }, {
-          id: params.id
+        id: params.id,
       });
       return result;
     } catch (error) {
