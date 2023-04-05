@@ -20,33 +20,25 @@ class BillController extends Controller {
       const user_id = decode.id;
       const list = await ctx.service.bill.list({ id: user_id, start, end });
 
-      // 过滤出月份
-      // const _list = list.filter(item => {
-      //   if (type_id !== 'all') {
-      //     return moment(Number(item.date)).format('YYYY-MM') === date && type_id === item.type_id;
-      //   }
-      //   return moment(Number(item.date)).format('YYYY-MM') === date;
-      // });
-
-      // const _list = JSON.parse(JSON.stringify(list));
-      const _list = list;
-
       // 格式化
-      const listMap = _list.reduce((curr, item) => {
-        curr.push({
-          date: start,
-          bills: [{ ...item, id: `${item.id}` }],
+      const dateMap = new Map();
+      list.forEach(item => {
+        const formatItemDate = moment(item.date).format('YYYY-MM-DD');
+        const itemDateList = dateMap.get(formatItemDate) || [];
+        dateMap.set(formatItemDate, [ ...itemDateList, item ]);
+      });
+
+      const _list = [];
+      dateMap.forEach((value, key) => {
+        _list.push({
+          bills: value,
+          date: key,
         });
-        return curr;
-      }, []);
+      });
 
       // 分页处理
-      const filterListMap = listMap;
-
       const totalExpense = 100;
-
       const totalIncome = 200;
-
 
       ctx.body = {
         code: 200,
@@ -54,8 +46,8 @@ class BillController extends Controller {
         data: {
           totalExpense,
           totalIncome,
-          totalPage: Math.ceil(listMap.length / page_size),
-          list: filterListMap || [],
+          totalPage: Math.ceil(_list.length / page_size),
+          list: _list,
         },
       };
     } catch (err) {
