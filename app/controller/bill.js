@@ -1,72 +1,51 @@
 'use strict';
 
 const moment = require('moment');
+const csvtojson = require('csvtojson');
 
 const Controller = require('egg').Controller;
 
 class BillController extends Controller {
   async list() {
     const { ctx, app } = this;
-    const { date, page, page_size = 5, type_id = 'all' } = ctx.query;
+    const { start, end, page, page_size = 5, type_id = 'all' } = ctx.query;
     try {
-      let user_id;
-      // 通过 token 解析，拿到 user_id
       const token = ctx.request.header.authorization;
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
-      if (!decode) return;
-      user_id = decode.id;
-      const list = await ctx.service.bill.list(user_id);
+
+      if (!decode) {
+        return;
+      }
+
+      const user_id = decode.id;
+      const list = await ctx.service.bill.list({ id: user_id, start, end });
+
       // 过滤出月份
-      const _list = list.filter(item => {
-        if (type_id != 'all') {
-          return moment(Number(item.date)).format('YYYY-MM') == date && type_id == item.type_id;
-        }
-        return moment(Number(item.date)).format('YYYY-MM') == date;
-      });
+      // const _list = list.filter(item => {
+      //   if (type_id !== 'all') {
+      //     return moment(Number(item.date)).format('YYYY-MM') === date && type_id === item.type_id;
+      //   }
+      //   return moment(Number(item.date)).format('YYYY-MM') === date;
+      // });
+
+      // const _list = JSON.parse(JSON.stringify(list));
+      const _list = list;
 
       // 格式化
       const listMap = _list.reduce((curr, item) => {
-        const date = moment(Number(item.date)).format('YYYY-MM-DD');
-        // 如果能在累加的数组中找到当前项日期的，那么在数组中的加入当前项到 bills 数组。
-        if (curr && curr.length && curr.findIndex(item => item.date == date) > -1) {
-          const index = curr.findIndex(item => item.date == date);
-          curr[index].bills.push(item);
-        }
-        // 如果在累加的数组中找不到当前项日期的，那么再新建一项。
-        if (curr && curr.length && curr.findIndex(item => item.date == date) == -1) {
-          curr.push({
-            date,
-            bills: [ item ],
-          });
-        }
-
-        if (!curr.length) {
-          curr.push({
-            date,
-            bills: [ item ],
-          });
-        }
+        curr.push({
+          date: start,
+          bills: [{ ...item, id: `${item.id}` }],
+        });
         return curr;
-      }, []).sort((a, b) => moment(b.date) - moment(a.date));
+      }, []);
 
       // 分页处理
-      const filterListMap = listMap.slice((page - 1) * page_size, page * page_size);
+      const filterListMap = listMap;
 
-      const __list = list.filter(item => moment(Number(item.date)).format('YYYY-MM') == date);
-      const totalExpense = __list.reduce((curr, item) => {
-        if (item.pay_type == 1) {
-          curr += Number(item.amount);
-          return curr;
-        }
-        return curr;
-      }, 0);
-      const totalIncome = __list.reduce((curr, item) => {
-        if (item.pay_type == 2) {
-          curr += Number(item.amount);
-          return curr;
-        }
-        return curr;
-      }, 0);
+      const totalExpense = 100;
+
+      const totalIncome = 200;
 
 
       ctx.body = {
@@ -90,9 +69,9 @@ class BillController extends Controller {
 
   async add() {
     const { ctx, app } = this;
-    const { amount, type_id, type_name, date, pay_type, remark = '' } = ctx.request.body;
+    const { amount, type_id, type_name, pay_type, remark = '' } = ctx.request.body;
 
-    if (!amount || !type_id || !type_name || !date || !pay_type) {
+    if (!amount || !type_id || !type_name || !pay_type) {
       ctx.body = {
         code: 400,
         msg: '参数错误',
@@ -101,16 +80,15 @@ class BillController extends Controller {
     }
 
     try {
-      let user_id;
       const token = ctx.request.header.authorization;
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
       if (!decode) return;
-      user_id = decode.id;
-      const result = await ctx.service.bill.add({
+      const user_id = decode.id;
+      await ctx.service.bill.add({
         amount,
         type_id,
         type_name,
-        date,
+        date: moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
         pay_type,
         remark,
         user_id,
@@ -350,8 +328,48 @@ class BillController extends Controller {
     const { ctx, app } = this;
     const file = ctx.request.files[0];
 
-    const fs = require('fs');
-    const fileReaded = fs.readFileSync(file.filepath);
+    if (!file.filepath) {
+      return;
+    }
+
+    csvtojson().fromFile(file.filepath).then(async res => {
+      try {
+        const token = ctx.request.header.authorization;
+        const decode = await app.jwt.verify(token, app.config.jwt.secret);
+        if (!decode) {
+          return;
+        }
+
+        const user_id = decode.id;
+
+        const params = res.map(item => ({
+          amount: item['金额'],
+          type_id: null,
+          type_name: item['账目名称'],
+          date: item['时间'],
+          pay_type: item['类型'], // 收入支出
+          remark: item['备注'],
+          user_id,
+        }));
+
+        const result = await ctx.service.bill.add(params);
+
+        console.log(result, '=> 导入结果');
+
+        ctx.body = {
+          code: 200,
+          msg: '请求成功',
+          data: null,
+        };
+      } catch (error) {
+        ctx.body = {
+          code: 500,
+          msg: '系统错误',
+          data: null,
+        };
+      }
+    });
+
   }
 }
 

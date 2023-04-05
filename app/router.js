@@ -19,7 +19,7 @@ module.exports = app => {
   router.post('/api/bill/update', _jwt, controller.bill.update); // 账单更新
   router.post('/api/bill/delete', _jwt, controller.bill.delete); // 获取详情
   router.get('/api/bill/data', _jwt, controller.bill.data); // 获取数据
-  router.post('/api/bill/import', _jwt, controller.bill.import); // 导入账单
+  router.post('/api/bill/import', controller.bill.import); // 导入账单
 
   router.get('/api/note/list', _jwt, controller.note.list); // 获取笔记列表
   router.post('/api/note/add', _jwt, controller.note.add); // 新增笔记

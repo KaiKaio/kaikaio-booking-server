@@ -24,7 +24,8 @@ module.exports = appInfo => {
 
   config.multipart = {
     mode: 'file',
-    fileSize: '50kb',
+    fileSize: '500kb',
+    whitelist: [ '.csv' ],
   };
 
   config.security = {
