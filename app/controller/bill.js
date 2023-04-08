@@ -8,7 +8,7 @@ const Controller = require('egg').Controller;
 class BillController extends Controller {
   async list() {
     const { ctx, app } = this;
-    const { start, end, page, page_size = 5, type_id = 'all' } = ctx.query;
+    const { start, end, page, page_size = 10, type_id = 'all' } = ctx.query;
     try {
       const token = ctx.request.header.authorization;
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
@@ -18,7 +18,7 @@ class BillController extends Controller {
       }
 
       const user_id = decode.id;
-      const list = await ctx.service.bill.list({ id: user_id, start, end });
+      const list = await ctx.service.bill.list({ id: user_id, start, end, pageNum: page });
 
       // 格式化
       const dateMap = new Map();
@@ -324,43 +324,51 @@ class BillController extends Controller {
       return;
     }
 
-    csvtojson().fromFile(file.filepath).then(async res => {
-      try {
-        const token = ctx.request.header.authorization;
-        const decode = await app.jwt.verify(token, app.config.jwt.secret);
-        if (!decode) {
-          return;
-        }
+    const res = await csvtojson().fromFile(file.filepath);
 
-        const user_id = decode.id;
-
-        const params = res.map(item => ({
-          amount: item['金额'],
-          type_id: null,
-          type_name: item['账目名称'],
-          date: item['时间'],
-          pay_type: item['类型'], // 收入支出
-          remark: item['备注'],
-          user_id,
-        }));
-
-        const result = await ctx.service.bill.add(params);
-
-        console.log(result, '=> 导入结果');
-
-        ctx.body = {
-          code: 200,
-          msg: '请求成功',
-          data: null,
-        };
-      } catch (error) {
-        ctx.body = {
-          code: 500,
-          msg: '系统错误',
-          data: null,
-        };
+    try {
+      const token = ctx.request.header.authorization;
+      const decode = await app.jwt.verify(token, app.config.jwt.secret);
+      if (!decode) {
+        return;
       }
-    });
+
+      const user_id = decode.id;
+
+      const dataMapIsTimiApp = {
+        用餐: '1',
+        交通: '2',
+        丽人: '3',
+        服饰: '4',
+        日用品: '5',
+        娱乐: '6',
+        买烟: '7',
+      };
+
+      const params = res.map(item => ({
+        amount: item['金额'],
+        type_id: dataMapIsTimiApp[item['账目名称']] || '999',
+        type_name: item['账目名称'],
+        date: item['时间'],
+        pay_type: item['类型'], // 收入支出
+        remark: item['备注'],
+        user_id,
+      }));
+
+      await ctx.service.bill.add(params);
+
+      ctx.body = {
+        code: 200,
+        msg: '请求成功',
+        data: null,
+      };
+    } catch (error) {
+      ctx.body = {
+        code: 500,
+        msg: '系统错误',
+        data: null,
+      };
+    }
 
   }
 }
