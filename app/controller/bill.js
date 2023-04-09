@@ -18,7 +18,7 @@ class BillController extends Controller {
       }
 
       const user_id = decode.id;
-      const list = await ctx.service.bill.list({ id: user_id, start, end, pageNum: page });
+      const list = await ctx.service.bill.list({ id: user_id, start, end, pageNum: page, pageSize: page_size });
 
       // 格式化
       const dateMap = new Map();
@@ -335,22 +335,19 @@ class BillController extends Controller {
 
       const user_id = decode.id;
 
-      const dataMapIsTimiApp = {
-        用餐: '1',
-        交通: '2',
-        丽人: '3',
-        服饰: '4',
-        日用品: '5',
-        娱乐: '6',
-        买烟: '7',
-      };
+      const typeList = await ctx.service.type.list(user_id);
+
+      const dataMapIsTimiApp = {};
+      typeList.forEach(item => {
+        dataMapIsTimiApp[item.name] = item.id;
+      });
 
       const params = res.map(item => ({
         amount: item['金额'],
         type_id: dataMapIsTimiApp[item['账目名称']] || '999',
         type_name: item['账目名称'],
         date: item['时间'],
-        pay_type: item['类型'], // 收入支出
+        pay_type: item['类型'] === '支出' ? '1' : '2', // 收入支出
         remark: item['备注'],
         user_id,
       }));
