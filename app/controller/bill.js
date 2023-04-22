@@ -8,7 +8,13 @@ const Controller = require('egg').Controller;
 class BillController extends Controller {
   async list() {
     const { ctx, app } = this;
-    const { start, end, page, page_size = 10, type_id = 'all' } = ctx.query;
+    const {
+      start,
+      end,
+      page,
+      page_size = 10,
+      // type_id = 'all'
+    } = ctx.query;
     try {
       const token = ctx.request.header.authorization;
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
@@ -103,11 +109,10 @@ class BillController extends Controller {
     const { ctx, app } = this;
     const { id = '' } = ctx.query;
     // 获取用户 user_id
-    let user_id;
     const token = ctx.request.header.authorization;
     const decode = await app.jwt.verify(token, app.config.jwt.secret);
     if (!decode) return;
-    user_id = decode.id;
+    const user_id = decode.id;
 
     if (!id) {
       ctx.body = {
@@ -147,12 +152,11 @@ class BillController extends Controller {
     }
 
     try {
-      let user_id;
       const token = ctx.request.header.authorization;
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
       if (!decode) return;
-      user_id = decode.id;
-      const result = await ctx.service.bill.update({
+      const user_id = decode.id;
+      await ctx.service.bill.update({
         id,
         amount,
         type_id,
@@ -189,12 +193,11 @@ class BillController extends Controller {
     }
 
     try {
-      let user_id;
       const token = ctx.request.header.authorization;
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
       if (!decode) return;
-      user_id = decode.id;
-      const result = await ctx.service.bill.delete(id, user_id);
+      const user_id = decode.id;
+      await ctx.service.bill.delete(id, user_id);
       ctx.body = {
         code: 200,
         msg: '请求成功',
@@ -213,11 +216,10 @@ class BillController extends Controller {
     const { ctx, app } = this;
     const { date = '' } = ctx.query;
     // 获取用户 user_id
-    let user_id;
     const token = ctx.request.header.authorization;
     const decode = await app.jwt.verify(token, app.config.jwt.secret);
     if (!decode) return;
-    user_id = decode.id;
+    const user_id = decode.id;
 
     if (!date) {
       ctx.body = {
@@ -231,15 +233,12 @@ class BillController extends Controller {
       const result = await ctx.service.bill.list(user_id);
       const start = moment(date).startOf('month').unix() * 1000; // 选择月份，月初时间
       const end = moment(date).endOf('month').unix() * 1000; // 选择月份，月末时间
-      const _data = result.filter(item => {
-        if (Number(item.date) > start && Number(item.date) < end) {
-          return item;
-        }
-      });
+
+      const _data = result.filter(item => Number(item.date) > start && Number(item.date) < end);
 
       // 总支出
       const total_expense = _data.reduce((arr, cur) => {
-        if (cur.pay_type == 1) {
+        if (cur.pay_type === 1) {
           arr += Number(cur.amount);
         }
         return arr;
@@ -247,7 +246,7 @@ class BillController extends Controller {
 
       // 总收入
       const total_income = _data.reduce((arr, cur) => {
-        if (cur.pay_type == 2) {
+        if (cur.pay_type === 2) {
           arr += Number(cur.amount);
         }
         return arr;
@@ -255,8 +254,8 @@ class BillController extends Controller {
 
       // 获取收支构成
       let total_data = _data.reduce((arr, cur) => {
-        const index = arr.findIndex(item => item.type_id == cur.type_id);
-        if (index == -1) {
+        const index = arr.findIndex(item => item.type_id === cur.type_id);
+        if (index === -1) {
           arr.push({
             type_id: cur.type_id,
             type_name: cur.type_name,
