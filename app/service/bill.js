@@ -5,10 +5,10 @@ const Service = require('egg').Service;
 class BillService extends Service {
 
   // 获取账单列表
-  async list({ id, start, end, pageNum, pageSize }) {
+  async list({ id, start, end, pageNum, pageSize, isAll = false }) {
     const { app } = this;
     const QUERY_STR = 'id, pay_type, amount, date, type_id, type_name, remark';
-    const sql = `select ${QUERY_STR} from bill where user_id = ${id} AND date BETWEEN '${start}' AND '${end}' ORDER BY UNIX_TIMESTAMP(date) DESC limit ${(pageNum - 1) * 10}, ${pageSize}`;
+    const sql = `select ${QUERY_STR} from bill where user_id = ${id} AND date BETWEEN '${start}' AND '${end}' ORDER BY UNIX_TIMESTAMP(date) DESC ${isAll ? '' : `limit ${(pageNum - 1) * 10}, ${pageSize}`}`;
     try {
       const result = await app.mysql.query(sql);
       return result;
