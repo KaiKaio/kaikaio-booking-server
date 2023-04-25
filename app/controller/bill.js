@@ -214,14 +214,15 @@ class BillController extends Controller {
 
   async data() {
     const { ctx, app } = this;
-    const { date = '' } = ctx.query;
-    // 获取用户 user_id
+    const { start = '', end = '' } = ctx.query;
+
     const token = ctx.request.header.authorization;
     const decode = await app.jwt.verify(token, app.config.jwt.secret);
     if (!decode) return;
+
     const user_id = decode.id;
 
-    if (!date) {
+    if (!start || !end) {
       ctx.body = {
         code: 400,
         msg: '参数错误',
@@ -229,27 +230,23 @@ class BillController extends Controller {
       };
       return;
     }
+
     try {
-      const result = await ctx.service.bill.list(user_id);
-      const start = moment(date).startOf('month').unix() * 1000; // 选择月份，月初时间
-      const end = moment(date).endOf('month').unix() * 1000; // 选择月份，月末时间
-
-      const _data = result.filter(item => Number(item.date) > start && Number(item.date) < end);
-
+      const _data = await ctx.service.bill.list({ id: user_id, start, end, isAll: true });
       // 总支出
-      const total_expense = _data.reduce((arr, cur) => {
-        if (cur.pay_type === 1) {
-          arr += Number(cur.amount);
+      const total_expense = _data.reduce((total, cur) => {
+        if (cur.pay_type === '1') {
+          total += Number(cur.amount);
         }
-        return arr;
+        return total;
       }, 0);
 
       // 总收入
-      const total_income = _data.reduce((arr, cur) => {
-        if (cur.pay_type === 2) {
-          arr += Number(cur.amount);
+      const total_income = _data.reduce((total, cur) => {
+        if (cur.pay_type === '2') {
+          total += Number(cur.amount);
         }
-        return arr;
+        return total;
       }, 0);
 
       // 获取收支构成
@@ -275,26 +272,26 @@ class BillController extends Controller {
       });
 
       // 柱状图数据
-      // let bar_data = _data.reduce((curr, arr) => {
-      //   const index = curr.findIndex(item => item.date == moment(Number(arr.date)).format('YYYY-MM-DD'))
-      //   if (index == -1) {
-      //     curr.push({
-      //       pay_type: arr.pay_type,
-      //       date: moment(Number(arr.date)).format('YYYY-MM-DD'),
-      //       number: Number(arr.amount)
-      //     })
-      //   }
-      //   if (index > -1) {
-      //     curr[index].number += Number(arr.amount)
-      //   }
+      let bar_data = _data.reduce((curr, arr) => {
+        const index = curr.findIndex(item => item.date === moment(Number(arr.date)).format('YYYY-MM-DD'));
+        if (index === -1) {
+          curr.push({
+            pay_type: arr.pay_type,
+            date: moment(Number(arr.date)).format('YYYY-MM-DD'),
+            number: Number(arr.amount),
+          });
+        }
+        if (index > -1) {
+          curr[index].number += Number(arr.amount);
+        }
 
-      //   return curr
-      // }, [])
+        return curr;
+      }, []);
 
-      // bar_data = bar_data.sort((a, b) => moment(a.date).unix() - moment(b.date).unix()).map((item) => {
-      //   item.number = Number(item.number).toFixed(2)
-      //   return item
-      // })
+      bar_data = bar_data.sort((a, b) => moment(a.date).unix() - moment(b.date).unix()).map(item => {
+        item.number = Number(item.number).toFixed(2);
+        return item;
+      });
 
       ctx.body = {
         code: 200,
@@ -303,7 +300,7 @@ class BillController extends Controller {
           total_expense: Number(total_expense).toFixed(2),
           total_income: Number(total_income).toFixed(2),
           total_data: total_data || [],
-          // bar_data: bar_data || []
+          bar_data: bar_data || [],
         },
       };
     } catch (error) {
