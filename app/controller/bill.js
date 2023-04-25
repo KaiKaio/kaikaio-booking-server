@@ -67,9 +67,9 @@ class BillController extends Controller {
 
   async add() {
     const { ctx, app } = this;
-    const { amount, type_id, type_name, pay_type, remark = '' } = ctx.request.body;
+    const { amount, type_id, type_name, pay_type, remark = '', date } = ctx.request.body;
 
-    if (!amount || !type_id || !type_name || !pay_type) {
+    if (!amount || !type_id || !type_name || !pay_type || !date) {
       ctx.body = {
         code: 400,
         msg: '参数错误',
@@ -86,7 +86,7 @@ class BillController extends Controller {
         amount,
         type_id,
         type_name,
-        date: moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
+        date: moment(date).format('YYYY-MM-DD HH:mm:ss'),
         pay_type,
         remark,
         user_id,
@@ -161,7 +161,7 @@ class BillController extends Controller {
         amount,
         type_id,
         type_name,
-        date,
+        date: moment(date).format('YYYY-MM-DD HH:mm:ss'),
         pay_type,
         remark,
         user_id,
