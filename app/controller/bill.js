@@ -13,7 +13,7 @@ class BillController extends Controller {
       end,
       page,
       page_size = 10,
-      // type_id = 'all'
+      type_id = '',
     } = ctx.query;
     try {
       const token = ctx.request.header.authorization;
@@ -24,7 +24,13 @@ class BillController extends Controller {
       }
 
       const user_id = decode.id;
-      const list = await ctx.service.bill.list({ id: user_id, start, end, pageNum: page, pageSize: page_size });
+      const list = await ctx.service.bill.list({
+        id: user_id,
+        start, end,
+        type_id,
+        pageNum: page,
+        pageSize: page_size,
+      });
 
       // 格式化
       const dateMap = new Map();
