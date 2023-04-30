@@ -14,13 +14,30 @@ class BillService extends Service {
       where user_id = ${id} AND 
       ${type_id ? `type_id = ${type_id} AND ` : ''}
       date BETWEEN '${start}' AND '${end}' 
-      ORDER BY UNIX_TIMESTAMP(date) DESC 
-      ${isAll ? '' : `limit ${(pageNum - 1) * 10}, ${pageSize}`}
+      ORDER BY UNIX_TIMESTAMP(date) DESC , id DESC
+      ${isAll ? '' : `limit ${(pageNum - 1) * pageSize}, ${pageSize}`}
     `;
+
+    const totalSql = `SELECT COUNT(*) from bill WHERE user_id = ${id} AND 
+    ${type_id ? `type_id = ${type_id} AND ` : ''}
+    date BETWEEN '${start}' AND '${end}'`;
+
+    const expenseSql = `SELECT SUM(amount) from bill WHERE user_id = ${id} AND 
+    pay_type = 1 AND 
+    ${type_id ? `type_id = ${type_id} AND ` : ''}
+    date BETWEEN '${start}' AND '${end}'`;
+
+    const inComeSql = `SELECT SUM(amount) from bill WHERE user_id = ${id} AND 
+    pay_type = 2 AND 
+    ${type_id ? `type_id = ${type_id} AND ` : ''}
+    date BETWEEN '${start}' AND '${end}'`;
 
     try {
       const result = await app.mysql.query(sql);
-      return result;
+      const total = await app.mysql.query(totalSql);
+      const expenseTotal = await app.mysql.query(expenseSql);
+      const incomeTotal = await app.mysql.query(inComeSql);
+      return { result, total, expenseTotal, incomeTotal };
     } catch (error) {
       console.log(error);
       return null;

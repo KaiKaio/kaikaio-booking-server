@@ -24,13 +24,22 @@ class BillController extends Controller {
       }
 
       const user_id = decode.id;
-      const list = await ctx.service.bill.list({
+      const {
+        result: list,
+        total,
+        expenseTotal,
+        incomeTotal,
+      } = await ctx.service.bill.list({
         id: user_id,
         start, end,
         type_id,
         pageNum: page,
         pageSize: page_size,
       });
+
+      const totalNum = total[0]['COUNT(*)'] || 0;
+      const expenseReuslt = expenseTotal[0]['SUM(amount)'] || 0;
+      const incomeReuslt = incomeTotal[0]['SUM(amount)'] || 0;
 
       // 格式化
       const dateMap = new Map();
@@ -48,21 +57,18 @@ class BillController extends Controller {
         });
       });
 
-      // 分页处理
-      const totalExpense = 100;
-      const totalIncome = 200;
-
       ctx.body = {
         code: 200,
         msg: '请求成功',
         data: {
-          totalExpense,
-          totalIncome,
-          totalPage: Math.ceil(_list.length / page_size),
+          totalExpense: expenseReuslt,
+          totalIncome: incomeReuslt,
+          totalPage: Math.ceil(totalNum / page_size),
           list: _list,
         },
       };
     } catch (err) {
+      console.log(err, '查询列表抛错');
       ctx.body = {
         code: 500,
         msg: '系统错误',
