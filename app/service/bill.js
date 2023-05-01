@@ -39,7 +39,7 @@ class BillService extends Service {
       const incomeTotal = await app.mysql.query(inComeSql);
       return { result, total, expenseTotal, incomeTotal };
     } catch (error) {
-      console.log(error);
+      console.log(error, 'Service - Bill - Error');
       return null;
     }
   }

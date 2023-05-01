@@ -244,27 +244,22 @@ class BillController extends Controller {
     }
 
     try {
-      const _data = await ctx.service.bill.list({ id: user_id, start, end, isAll: true });
-      // 总支出
-      const total_expense = _data.reduce((total, cur) => {
-        if (cur.pay_type === '1') {
-          total += Number(cur.amount);
-        }
-        return total;
-      }, 0);
+      // const _data = await ctx.service.bill.list({ id: user_id, start, end, isAll: true });
+      const {
+        result: list,
+        expenseTotal,
+        incomeTotal,
+      } = await ctx.service.bill.list({ id: user_id, start, end, isAll: true });
 
-      // 总收入
-      const total_income = _data.reduce((total, cur) => {
-        if (cur.pay_type === '2') {
-          total += Number(cur.amount);
-        }
-        return total;
-      }, 0);
+      const expenseReuslt = expenseTotal[0]['SUM(amount)'] || 0;
+      const incomeReuslt = incomeTotal[0]['SUM(amount)'] || 0;
 
       // 获取收支构成
-      let total_data = _data.reduce((arr, cur) => {
+      const total_data = list.reduce((arr, cur) => {
         const index = arr.findIndex(item => item.type_id === cur.type_id);
-        if (index === -1) {
+        if (index > -1) {
+          arr[index].number += Number(cur.amount);
+        } else {
           arr.push({
             type_id: cur.type_id,
             type_name: cur.type_name,
@@ -272,19 +267,14 @@ class BillController extends Controller {
             number: Number(cur.amount),
           });
         }
-        if (index > -1) {
-          arr[index].number += Number(cur.amount);
-        }
         return arr;
-      }, []);
-
-      total_data = total_data.map(item => {
+      }, []).map(item => {
         item.number = Number(Number(item.number).toFixed(2));
         return item;
       });
 
       // 柱状图数据
-      let bar_data = _data.reduce((curr, arr) => {
+      const bar_data = list.reduce((curr, arr) => {
         const index = curr.findIndex(item => item.date === moment(Number(arr.date)).format('YYYY-MM-DD'));
         if (index === -1) {
           curr.push({
@@ -298,9 +288,7 @@ class BillController extends Controller {
         }
 
         return curr;
-      }, []);
-
-      bar_data = bar_data.sort((a, b) => moment(a.date).unix() - moment(b.date).unix()).map(item => {
+      }, []).sort((a, b) => moment(a.date).unix() - moment(b.date).unix()).map(item => {
         item.number = Number(item.number).toFixed(2);
         return item;
       });
@@ -309,13 +297,14 @@ class BillController extends Controller {
         code: 200,
         msg: '请求成功',
         data: {
-          total_expense: Number(total_expense).toFixed(2),
-          total_income: Number(total_income).toFixed(2),
+          total_expense: expenseReuslt.toFixed(2),
+          total_income: incomeReuslt.toFixed(2),
           total_data: total_data || [],
           bar_data: bar_data || [],
         },
       };
     } catch (error) {
+      console.log(error, 'Controller - Bill - Error');
       ctx.body = {
         code: 500,
         msg: '系统错误',
