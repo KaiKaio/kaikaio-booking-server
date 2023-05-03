@@ -77,6 +77,38 @@ class BillController extends Controller {
     }
   }
 
+  async getEarliestItemDate() {
+    const { ctx, app } = this;
+    const {
+      type_id = '',
+    } = ctx.query;
+    try {
+      const token = ctx.request.header.authorization;
+      const decode = await app.jwt.verify(token, app.config.jwt.secret);
+
+      if (!decode) {
+        return;
+      }
+
+      // const user_id = decode.id;
+
+      const earliestList = await ctx.service.bill.getEarliestItemDate(type_id);
+
+      ctx.body = {
+        code: 200,
+        msg: '请求成功',
+        data: earliestList.length ? earliestList[0].EarliestDate : '',
+      };
+    } catch (err) {
+      console.log(err, '查询列表抛错');
+      ctx.body = {
+        code: 500,
+        msg: '系统错误',
+        data: null,
+      };
+    }
+  }
+
   async add() {
     const { ctx, app } = this;
     const { amount, type_id, type_name, pay_type, remark = '', date } = ctx.request.body;
@@ -244,7 +276,6 @@ class BillController extends Controller {
     }
 
     try {
-      // const _data = await ctx.service.bill.list({ id: user_id, start, end, isAll: true });
       const {
         result: list,
         expenseTotal,

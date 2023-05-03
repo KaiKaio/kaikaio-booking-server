@@ -4,7 +4,7 @@
  * @param {Egg.Application} app - egg application
  */
 module.exports = app => {
-  const { router, controller, jwt, middleware } = app;
+  const { router, controller, middleware } = app;
   const _jwt = middleware.jwtErr(app.config.jwt);
   router.post('/api/user/login', controller.user.login);
   router.post('/api/user/register', controller.user.register);
@@ -20,6 +20,7 @@ module.exports = app => {
   router.post('/api/bill/delete', _jwt, controller.bill.delete); // 获取详情
   router.get('/api/bill/data', _jwt, controller.bill.data); // 获取数据
   router.post('/api/bill/import', controller.bill.import); // 导入账单
+  router.get('/api/bill/getEarliestItemDate', controller.bill.getEarliestItemDate); // 查询类型最早日期
 
   router.get('/api/note/list', _jwt, controller.note.list); // 获取笔记列表
   router.post('/api/note/add', _jwt, controller.note.add); // 新增笔记

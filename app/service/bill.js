@@ -7,9 +7,9 @@ class BillService extends Service {
   // 获取账单列表
   async list({ id, start, end, pageNum, pageSize, isAll = false, type_id = '' }) {
     const { app } = this;
-    const QUERY_STR = 'id, pay_type, amount, date, type_id, type_name, remark';
+
     const sql = `
-      select ${QUERY_STR} 
+      select id, pay_type, amount, date, type_id, type_name, remark
       from bill 
       where user_id = ${id} AND 
       ${type_id ? `type_id = ${type_id} AND ` : ''}
@@ -40,6 +40,17 @@ class BillService extends Service {
       return { result, total, expenseTotal, incomeTotal };
     } catch (error) {
       console.log(error, 'Service - Bill - Error');
+      return null;
+    }
+  }
+
+  async getEarliestItemDate(type_id) {
+    const { app } = this;
+    try {
+      const result = await app.mysql.query(`SELECT MIN(date) as EarliestDate FROM bill ${type_id ? `WHERE type_id = ${type_id}` : ''}`);
+      return result;
+    } catch (error) {
+      console.log(error, 'Service - Bill - getEarliestItemDate - Error');
       return null;
     }
   }

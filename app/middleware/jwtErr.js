@@ -11,7 +11,7 @@ module.exports = options => {
         console.log('error', error);
         ctx.status = 200;
         ctx.body = {
-          msg: 'token已过期，请重新登录',
+          msg: '登录已过期，请重新登录',
           code: 401,
         };
         return;
