@@ -90,9 +90,9 @@ class BillController extends Controller {
         return;
       }
 
-      // const user_id = decode.id;
+      const user_id = decode.id;
 
-      const earliestList = await ctx.service.bill.getEarliestItemDate(type_id);
+      const earliestList = await ctx.service.bill.getEarliestItemDate({ user_id, type_id });
 
       ctx.body = {
         code: 200,

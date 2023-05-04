@@ -44,10 +44,10 @@ class BillService extends Service {
     }
   }
 
-  async getEarliestItemDate(type_id) {
+  async getEarliestItemDate({ type_id = '', user_id = '' }) {
     const { app } = this;
     try {
-      const result = await app.mysql.query(`SELECT MIN(date) as EarliestDate FROM bill ${type_id ? `WHERE type_id = ${type_id}` : ''}`);
+      const result = await app.mysql.query(`SELECT MIN(date) as EarliestDate FROM bill WHERE user_id = ${user_id}${type_id ? ` AND type_id = ${type_id}` : ''}`);
       return result;
     } catch (error) {
       console.log(error, 'Service - Bill - getEarliestItemDate - Error');
