@@ -81,7 +81,6 @@ class UserController extends Controller {
     const token = app.jwt.sign({
       id: userInfo.id,
       username: userInfo.username,
-      exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60), // token 有效期为 24 小时
     }, app.config.jwt.secret);
 
     ctx.body = {
@@ -151,11 +150,10 @@ class UserController extends Controller {
     const { old_pass = '', new_pass = '', new_pass2 = '' } = ctx.request.body;
 
     try {
-      let user_id;
       const token = ctx.request.header.authorization;
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
       if (!decode) return;
-      if (decode.username == 'admin') {
+      if (decode.username === 'admin') {
         ctx.body = {
           code: 400,
           msg: '管理员账户，不允许修改密码！',
@@ -163,10 +161,9 @@ class UserController extends Controller {
         };
         return;
       }
-      user_id = decode.id;
       const userInfo = await ctx.service.user.getUserByName(decode.username);
 
-      if (old_pass != userInfo.password) {
+      if (old_pass !== userInfo.password) {
         ctx.body = {
           code: 400,
           msg: '原密码错误',
@@ -175,7 +172,7 @@ class UserController extends Controller {
         return;
       }
 
-      if (new_pass != new_pass2) {
+      if (new_pass !== new_pass2) {
         ctx.body = {
           code: 400,
           msg: '新密码不一致',
@@ -184,7 +181,7 @@ class UserController extends Controller {
         return;
       }
 
-      const result = await ctx.service.user.modifyPass({
+      await ctx.service.user.modifyPass({
         ...userInfo,
         password: new_pass,
       });

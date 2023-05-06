@@ -4,7 +4,7 @@
 module.exports = {
   jwt: {
     enable: true,
-    package: 'egg-jwt'
+    package: 'egg-jwt',
   },
   cors: {
     enable: true,
@@ -12,6 +12,6 @@ module.exports = {
   },
   mysql: {
     enable: true,
-    package: 'egg-mysql'
-  }
+    package: 'egg-mysql',
+  },
 };

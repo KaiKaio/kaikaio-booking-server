@@ -19,7 +19,7 @@ module.exports = appInfo => {
   config.middleware = [];
 
   config.jwt = {
-    secret: 'Nick',
+    secret: 'Kaikaio',
   };
 
   config.multipart = {
