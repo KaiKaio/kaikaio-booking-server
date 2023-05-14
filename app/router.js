@@ -22,11 +22,8 @@ module.exports = app => {
   router.post('/api/bill/import', controller.bill.import); // 导入账单
   router.get('/api/bill/getEarliestItemDate', controller.bill.getEarliestItemDate); // 查询类型最早日期
 
-  router.get('/api/note/list', _jwt, controller.note.list); // 获取笔记列表
-  router.post('/api/note/add', _jwt, controller.note.add); // 新增笔记
-  router.post('/api/note/delete', _jwt, controller.note.delete); // 删除笔记
-  router.post('/api/note/update', _jwt, controller.note.update); // 修改笔记
-  router.post('/api/upload', _jwt, controller.upload.upload); // 上传图片
+  router.get('/api/books/list', _jwt, controller.books.list); // 获取账本列表
+  router.post('/api/books/add', _jwt, controller.books.add); // 获取账本列表
 
   router.post('/api/user/verify', controller.user.verify); // 验证token
 };
