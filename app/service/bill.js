@@ -5,7 +5,7 @@ const Service = require('egg').Service;
 class BillService extends Service {
 
   // 获取账单列表
-  async list({ id, start, end, pageNum, pageSize, isAll = false, type_id = '' }) {
+  async list({ id, orderBy = 'DESC', start, end, pageNum, pageSize, isAll = false, type_id = '' }) {
     const { app } = this;
 
     const sql = `
@@ -14,7 +14,7 @@ class BillService extends Service {
       where user_id = ${id} AND 
       ${type_id ? `type_id = ${type_id} AND ` : ''}
       date BETWEEN '${start}' AND '${end}' 
-      ORDER BY UNIX_TIMESTAMP(date) DESC , id DESC
+      ORDER BY UNIX_TIMESTAMP(date) ${orderBy} ,id DESC
       ${isAll ? '' : `limit ${(pageNum - 1) * pageSize}, ${pageSize}`}
     `;
 

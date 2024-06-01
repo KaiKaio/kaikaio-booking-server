@@ -12,6 +12,7 @@ class BillController extends Controller {
       start,
       end,
       page,
+      orderBy,
       page_size = 10,
       type_id = '',
     } = ctx.query;
@@ -33,6 +34,7 @@ class BillController extends Controller {
         id: user_id,
         start, end,
         type_id,
+        orderBy,
         pageNum: page,
         pageSize: page_size,
       });
@@ -280,7 +282,12 @@ class BillController extends Controller {
         result: list,
         expenseTotal,
         incomeTotal,
-      } = await ctx.service.bill.list({ id: user_id, start, end, isAll: true });
+      } = await ctx.service.bill.list({
+        id: user_id,
+        start,
+        end,
+        isAll: true,
+      });
 
       const expenseReuslt = expenseTotal[0]['SUM(amount)'] || 0;
       const incomeReuslt = incomeTotal[0]['SUM(amount)'] || 0;
