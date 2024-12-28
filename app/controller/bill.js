@@ -311,26 +311,6 @@ class BillController extends Controller {
         return item;
       });
 
-      // 柱状图数据
-      const bar_data = list.reduce((curr, arr) => {
-        const index = curr.findIndex(item => item.date === moment(Number(arr.date)).format('YYYY-MM-DD'));
-        if (index === -1) {
-          curr.push({
-            pay_type: arr.pay_type,
-            date: moment(Number(arr.date)).format('YYYY-MM-DD'),
-            number: Number(arr.amount),
-          });
-        }
-        if (index > -1) {
-          curr[index].number += Number(arr.amount);
-        }
-
-        return curr;
-      }, []).sort((a, b) => moment(a.date).unix() - moment(b.date).unix()).map(item => {
-        item.number = Number(item.number).toFixed(2);
-        return item;
-      });
-
       ctx.body = {
         code: 200,
         msg: '请求成功',
@@ -338,7 +318,6 @@ class BillController extends Controller {
           total_expense: expenseReuslt.toFixed(2),
           total_income: incomeReuslt.toFixed(2),
           total_data: total_data || [],
-          bar_data: bar_data || [],
         },
       };
     } catch (error) {
@@ -349,6 +328,46 @@ class BillController extends Controller {
         data: null,
       };
     }
+  }
+
+  async queyBillByMonthly() {
+    const {
+      ctx,
+      // app
+    } = this;
+    const { startMonth = '', endMonth = '' } = ctx.query;
+
+    // const token = ctx.request.header.authorization;
+    // const decode = await app.jwt.verify(token, app.config.jwt.secret);
+    // if (!decode) return;
+
+    // const user_id = decode.id;
+    const user_id = 1;
+
+    if (!startMonth || !endMonth) {
+      ctx.body = {
+        code: 400,
+        msg: '参数错误',
+        data: null,
+      };
+      return;
+    }
+
+    // 使用moment.js解析传入的年月字符串，将日期设置为该月的最后一天
+    const startMonthFormat = moment(startMonth, 'YYYY-MM').startOf('month').format('YYYY-MM-DD');
+    const endMonthFormat = moment(endMonth, 'YYYY-MM').endOf('month').format('YYYY-MM-DD');
+    const result = await ctx.service.bill.queyBillByMonthly({ user_id, startMonth: startMonthFormat, endMonth: endMonthFormat });
+    const formateResult = result.map(item => {
+      return {
+        ...item,
+        total_expense: parseFloat(item.total_expense.toFixed(2)),
+      };
+    });
+    ctx.body = {
+      code: 200,
+      msg: '请求成功',
+      data: formateResult,
+    };
   }
 
   async import() {

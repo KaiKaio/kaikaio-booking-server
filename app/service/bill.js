@@ -107,6 +107,31 @@ class BillService extends Service {
       return null;
     }
   }
+
+  async queyBillByMonthly({ user_id, startMonth, endMonth }) {
+    const { app } = this;
+    try {
+      const result = app.mysql.query(
+        `SELECT
+          DATE_FORMAT( date, '%Y-%m' ) AS month,
+          SUM( amount ) AS total_expense 
+        FROM
+          bill 
+        WHERE
+          user_id = ${user_id}
+          AND pay_type = 1 
+          AND date BETWEEN '${startMonth}'
+          AND '${endMonth}' 
+        GROUP BY
+        month 
+        ORDER BY
+          month`);
+      return result;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
 }
 
 module.exports = BillService;
