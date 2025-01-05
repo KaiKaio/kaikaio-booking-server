@@ -9,7 +9,7 @@ class TypeController extends Controller {
     const token = ctx.request.header.authorization;
     const decode = await app.jwt.verify(token, app.config.jwt.secret);
     if (!decode) return;
-    const user_id = decode.id;
+    const user_id = decode.userid;
     const list = await ctx.service.type.list(user_id);
     ctx.body = {
       code: 200,

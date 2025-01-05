@@ -12,7 +12,7 @@ class NoteController extends Controller {
     const token = ctx.request.header.authorization;
     const decode = await app.jwt.verify(token, app.config.jwt.secret);
     if (!decode) return
-    user_id = decode.id
+    user_id = decode.userid
     const list = await ctx.service.note.list(user_id)
     ctx.body = {
       code: 200,
@@ -40,7 +40,7 @@ class NoteController extends Controller {
       const token = ctx.request.header.authorization;
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
       if (!decode) return
-      user_id = decode.id
+      user_id = decode.userid
       const result = await ctx.service.note.add({
         content: note,
         create_time: new Date().getTime(),
@@ -78,7 +78,7 @@ class NoteController extends Controller {
       const token = ctx.request.header.authorization;
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
       if (!decode) return
-      user_id = decode.id
+      user_id = decode.userid
       const result = await ctx.service.note.delete(id, user_id);
       ctx.body = {
         code: 200,
@@ -103,7 +103,7 @@ class NoteController extends Controller {
       const token = ctx.request.header.authorization;
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
       if (!decode) return
-      user_id = decode.id
+      user_id = decode.userid
       const result = await ctx.service.note.update({
         id,
         content: note,

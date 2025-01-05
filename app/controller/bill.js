@@ -19,12 +19,11 @@ class BillController extends Controller {
     try {
       const token = ctx.request.header.authorization;
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
-
       if (!decode) {
         return;
       }
 
-      const user_id = decode.id;
+      const user_id = decode.userid;
       const {
         result: list,
         total,
@@ -92,7 +91,7 @@ class BillController extends Controller {
         return;
       }
 
-      const user_id = decode.id;
+      const user_id = decode.userid;
 
       const earliestList = await ctx.service.bill.getEarliestItemDate({ user_id, type_id });
 
@@ -127,7 +126,7 @@ class BillController extends Controller {
       const token = ctx.request.header.authorization;
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
       if (!decode) return;
-      const user_id = decode.id;
+      const user_id = decode.userid;
       await ctx.service.bill.add({
         amount,
         type_id,
@@ -158,7 +157,7 @@ class BillController extends Controller {
     const token = ctx.request.header.authorization;
     const decode = await app.jwt.verify(token, app.config.jwt.secret);
     if (!decode) return;
-    const user_id = decode.id;
+    const user_id = decode.userid;
 
     if (!id) {
       ctx.body = {
@@ -201,7 +200,7 @@ class BillController extends Controller {
       const token = ctx.request.header.authorization;
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
       if (!decode) return;
-      const user_id = decode.id;
+      const user_id = decode.userid;
       await ctx.service.bill.update({
         id,
         amount,
@@ -242,7 +241,7 @@ class BillController extends Controller {
       const token = ctx.request.header.authorization;
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
       if (!decode) return;
-      const user_id = decode.id;
+      const user_id = decode.userid;
       await ctx.service.bill.delete(id, user_id);
       ctx.body = {
         code: 200,
@@ -266,7 +265,7 @@ class BillController extends Controller {
     const decode = await app.jwt.verify(token, app.config.jwt.secret);
     if (!decode) return;
 
-    const user_id = decode.id;
+    const user_id = decode.userid;
 
     if (!start || !end) {
       ctx.body = {
@@ -333,41 +332,44 @@ class BillController extends Controller {
   async queyBillByMonthly() {
     const {
       ctx,
-      // app
+      app,
     } = this;
     const { startMonth = '', endMonth = '' } = ctx.query;
 
-    // const token = ctx.request.header.authorization;
-    // const decode = await app.jwt.verify(token, app.config.jwt.secret);
-    // if (!decode) return;
+    try {
+      const token = ctx.request.header.authorization;
+      const decode = await app.jwt.verify(token, app.config.jwt.secret);
+      if (!decode) return;
 
-    // const user_id = decode.id;
-    const user_id = 1;
+      const user_id = decode.userid;
 
-    if (!startMonth || !endMonth) {
+      if (!startMonth || !endMonth) {
+        ctx.body = {
+          code: 400,
+          msg: '参数错误',
+          data: null,
+        };
+        return;
+      }
+
+      // 使用moment.js解析传入的年月字符串，将日期设置为该月的最后一天
+      const startMonthFormat = moment(startMonth, 'YYYY-MM').startOf('month').format('YYYY-MM-DD');
+      const endMonthFormat = moment(endMonth, 'YYYY-MM').endOf('month').format('YYYY-MM-DD');
+      const result = await ctx.service.bill.queyBillByMonthly({ user_id, startMonth: startMonthFormat, endMonth: endMonthFormat });
+      const formateResult = result.map(item => {
+        return {
+          ...item,
+          total_expense: parseFloat(item.total_expense.toFixed(2)),
+        };
+      });
       ctx.body = {
-        code: 400,
-        msg: '参数错误',
-        data: null,
+        code: 200,
+        msg: '请求成功',
+        data: formateResult,
       };
-      return;
+    } catch (err) {
+      console.log(err, 'queyBillByMonthly - con -error');
     }
-
-    // 使用moment.js解析传入的年月字符串，将日期设置为该月的最后一天
-    const startMonthFormat = moment(startMonth, 'YYYY-MM').startOf('month').format('YYYY-MM-DD');
-    const endMonthFormat = moment(endMonth, 'YYYY-MM').endOf('month').format('YYYY-MM-DD');
-    const result = await ctx.service.bill.queyBillByMonthly({ user_id, startMonth: startMonthFormat, endMonth: endMonthFormat });
-    const formateResult = result.map(item => {
-      return {
-        ...item,
-        total_expense: parseFloat(item.total_expense.toFixed(2)),
-      };
-    });
-    ctx.body = {
-      code: 200,
-      msg: '请求成功',
-      data: formateResult,
-    };
   }
 
   async import() {
@@ -387,7 +389,7 @@ class BillController extends Controller {
         return;
       }
 
-      const user_id = decode.id;
+      const user_id = decode.userid;
 
       const typeList = await ctx.service.type.list(user_id);
 

@@ -22,7 +22,7 @@ class BooksController extends Controller {
         return;
       }
 
-      const user_id = decode.id;
+      const user_id = decode.userid;
       const result = await ctx.service.books.add({
         name,
         user_id,
@@ -55,7 +55,7 @@ class BooksController extends Controller {
         return;
       }
 
-      const user_id = decode.id;
+      const user_id = decode.userid;
       const data = await ctx.service.books.list({
         userId: user_id,
       }) || [];

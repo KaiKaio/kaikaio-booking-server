@@ -2,6 +2,13 @@
 
 'use strict';
 
+const fs = require('fs');
+const path = require('path');
+
+const public_key = fs.readFileSync(
+  path.join(__dirname, './ssl_key/rsa_public_key.pem')
+);
+
 /**
  * @param {Egg.EggAppInfo} appInfo app info
  */
@@ -19,7 +26,8 @@ module.exports = appInfo => {
   config.middleware = [];
 
   config.jwt = {
-    secret: 'Kaikaio',
+    // secret: 'Kaikaio',
+    secret: public_key,
   };
 
   config.multipart = {

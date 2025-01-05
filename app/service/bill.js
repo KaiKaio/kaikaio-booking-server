@@ -11,28 +11,29 @@ class BillService extends Service {
     const sql = `
       select id, pay_type, amount, date, type_id, type_name, remark
       from bill 
-      where user_id = ${id} AND 
+      where user_id = '${id}' AND 
       ${type_id ? `type_id = ${type_id} AND ` : ''}
       date BETWEEN '${start}' AND '${end}' 
       ORDER BY UNIX_TIMESTAMP(date) ${orderBy} ,id DESC
       ${isAll ? '' : `limit ${(pageNum - 1) * pageSize}, ${pageSize}`}
     `;
 
-    const totalSql = `SELECT COUNT(*) from bill WHERE user_id = ${id} AND 
+    const totalSql = `SELECT COUNT(*) from bill WHERE user_id = '${id}' AND 
     ${type_id ? `type_id = ${type_id} AND ` : ''}
     date BETWEEN '${start}' AND '${end}'`;
 
-    const expenseSql = `SELECT SUM(amount) from bill WHERE user_id = ${id} AND 
+    const expenseSql = `SELECT SUM(amount) from bill WHERE user_id = '${id}' AND 
     pay_type = 1 AND 
     ${type_id ? `type_id = ${type_id} AND ` : ''}
     date BETWEEN '${start}' AND '${end}'`;
 
-    const inComeSql = `SELECT SUM(amount) from bill WHERE user_id = ${id} AND 
+    const inComeSql = `SELECT SUM(amount) from bill WHERE user_id = '${id}' AND 
     pay_type = 2 AND 
     ${type_id ? `type_id = ${type_id} AND ` : ''}
     date BETWEEN '${start}' AND '${end}'`;
 
     try {
+
       const result = await app.mysql.query(sql);
       const total = await app.mysql.query(totalSql);
       const expenseTotal = await app.mysql.query(expenseSql);
@@ -70,6 +71,7 @@ class BillService extends Service {
   async detail(id, user_id) {
     const { app } = this;
     try {
+      console.log(id, user_id, 'idididid');
       const result = await app.mysql.get('bill', { id, user_id });
       return result;
     } catch (error) {
@@ -118,7 +120,7 @@ class BillService extends Service {
         FROM
           bill 
         WHERE
-          user_id = ${user_id}
+          user_id = '${user_id}'
           AND pay_type = 1 
           AND date BETWEEN '${startMonth}'
           AND '${endMonth}' 

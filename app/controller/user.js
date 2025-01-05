@@ -117,7 +117,7 @@ class UserController extends Controller {
       const token = ctx.request.header.authorization;
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
       if (!decode) return;
-      const user_id = decode.id;
+      const user_id = decode.userid;
 
       const userInfo = await ctx.service.user.getUserByName(decode.username);
       await ctx.service.user.editUserInfo({
@@ -202,11 +202,19 @@ class UserController extends Controller {
 
   async verify() {
     const { ctx, app } = this;
-    const { token } = ctx.request.body;
-    console.log(ctx.state.user);
-    const decode = await app.jwt.verify(token, app.config.jwt.secret);
-    console.log('decode', decode);
-    ctx.body = 'success gays';
+    const { authorization } = ctx.request.header;
+    try {
+      app.jwt.verify(authorization, app.config.jwt.secret);
+      ctx.body = {
+        code: 200,
+      };
+    } catch (error) {
+      console.error(error, 'verify-error');
+      ctx.status = 401;
+      ctx.body = {
+        code: 401,
+      };
+    }
   }
 }
 

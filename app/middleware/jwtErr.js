@@ -9,7 +9,7 @@ module.exports = options => {
         await next();
       } catch (error) {
         console.log('error', error);
-        ctx.status = 200;
+        ctx.status = 401;
         ctx.body = {
           msg: '登录已过期，请重新登录',
           code: 401,
@@ -17,7 +17,7 @@ module.exports = options => {
         return;
       }
     } else {
-      ctx.status = 200;
+      ctx.status = 401;
       ctx.body = {
         code: 401,
       };
