@@ -78,10 +78,14 @@ class UserController extends Controller {
     }
 
     // 生成 token 加盐
-    const token = app.jwt.sign({
-      id: userInfo.id,
-      username: userInfo.username,
-    }, app.config.jwt.secret);
+    const token = app.jwt.sign(
+      {
+        id: userInfo.id,
+        username: userInfo.username,
+      },
+      app.config.jwt.secret,
+      { expiresIn: app.config.jwt.expiresIn }
+    );
 
     ctx.body = {
       code: 200,
