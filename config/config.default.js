@@ -61,32 +61,23 @@ module.exports = appInfo => {
   };
 
   exports.mysql = {
-    // 单数据库信息配置
     client: {
-      // host
-      host: 'localhost',
-      // 端口号
-      port: '3306',
-      // 用户名
-      user: 'root',
-      // 密码
-      password: 'chenkaiwei042',
-      // 数据库名
-      database: 'kaikaio-booking-db',
+      host: process.env.MYSQL_HOST || 'localhost',
+      port: process.env.MYSQL_PORT || '3306',
+      user: process.env.MYSQL_USER || 'root',
+      password: process.env.MYSQL_PASSWORD || 'chenkaiwei042',
+      database: process.env.MYSQL_DB || 'kaikaio-booking-db',
       charset: 'utf8mb4',
     },
-    // 是否加载到 app 上，默认开启
     app: true,
-    // 是否加载到 agent 上，默认关闭
     agent: false,
   };
 
   config.cluster = {
     listen: {
       path: '',
-      port: 7009,
+      port: Number(process.env.PORT) || 7009,
       hostname: '0.0.0.0',
-      // hostname: 'localhost',
     },
   };
 
