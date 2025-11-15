@@ -7,6 +7,8 @@ RUN npm install -g pm2
 ENV NODE_ENV=production \
     EGG_SERVER_ENV=prod
 EXPOSE 7009
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s \
+  CMD node -e "const http=require('http');const port=process.env.PORT||7009;const req=http.get({hostname:'127.0.0.1',port,path:'/'},()=>process.exit(0));req.on('error',()=>process.exit(1));setTimeout(()=>process.exit(1),4000)"
 CMD ["pm2-runtime", "ecosystem.config.js"]
 
 # docker run -d --name kaikaio-booking-server -p 7009:7009 -e PORT=7009 -e MYSQL_HOST=host.docker.internal -e MYSQL_PORT=3306 -e MYSQL_USER=root -e MYSQL_PASSWORD=<你的密码> -e MYSQL_DB=kaikaio-booking-db kaikaio-booking-server:latest
