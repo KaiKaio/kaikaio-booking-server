@@ -1,7 +1,5 @@
 'use strict';
 
-const defaultAvatar = '//s.yezgea02.com/1615973940679/WeChat77d6d2ac093e247c361f0b8a7aeb6c2a.png';
-
 const Controller = require('egg').Controller;
 
 class UserController extends Controller {
@@ -100,15 +98,15 @@ class UserController extends Controller {
     const { ctx, app } = this;
     const token = ctx.request.header.authorization;
     const decode = await app.jwt.verify(token, app.config.jwt.secret);
-    const userInfo = await ctx.service.user.getUserByName(decode.username);
+    const userInfo = await ctx.service.user.getUserById(decode.userid);
     ctx.body = {
       code: 200,
       msg: '请求成功',
       data: {
         id: userInfo?.id || '',
-        username: userInfo.username,
-        signature: userInfo.signature || '',
-        avatar: userInfo.avatar || defaultAvatar,
+        username: userInfo?.username || '',
+        signature: userInfo?.signature || '',
+        avatar: userInfo?.avatar || '',
       },
     };
   }

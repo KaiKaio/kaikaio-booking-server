@@ -28,6 +28,18 @@ class UserService extends Service {
     }
   }
 
+  // 通过 user_id 获取用户信息
+  async getUserById(user_id) {
+    const { app } = this;
+    try {
+      const result = await app.mysql.get('user', { user_id });
+      return result;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
   async editUserInfo(params) {
     const { app } = this;
     try {
