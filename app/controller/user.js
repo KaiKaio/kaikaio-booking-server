@@ -105,7 +105,7 @@ class UserController extends Controller {
       code: 200,
       msg: '请求成功',
       data: {
-        id: userInfo.id,
+        id: userInfo?.id || '',
         username: userInfo.username,
         signature: userInfo.signature || '',
         avatar: userInfo.avatar || defaultAvatar,
