@@ -101,7 +101,7 @@ class UserController extends Controller {
     const userInfo = await ctx.service.user.getUserById(decode.userid);
     ctx.body = {
       code: 200,
-      msg: '请求成功',
+      msg: 'success',
       data: {
         id: userInfo?.id || '',
         username: userInfo?.username || '',
