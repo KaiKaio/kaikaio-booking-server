@@ -2,12 +2,13 @@
 
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
+// const fs = require('fs');
+// const path = require('path');
 
-const public_key = fs.readFileSync(
-  path.join(__dirname, './ssl_key/rsa_public_key.pem')
-);
+let public_key;
+if (process.env.JWT_PUBLIC_KEY) {
+  public_key = process.env.JWT_PUBLIC_KEY;
+}
 
 /**
  * @param {Egg.EggAppInfo} appInfo app info
