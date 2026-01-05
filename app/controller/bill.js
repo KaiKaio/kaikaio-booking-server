@@ -1,6 +1,8 @@
 'use strict';
 
-const moment = require('moment');
+const dayjs = require('dayjs');
+const customParseFormat = require('dayjs/plugin/customParseFormat');
+dayjs.extend(customParseFormat);
 const csvtojson = require('csvtojson');
 
 const Controller = require('egg').Controller;
@@ -45,7 +47,7 @@ class BillController extends Controller {
       // 格式化
       const dateMap = new Map();
       list.forEach(item => {
-        const formatItemDate = moment(item.date).format('YYYY-MM-DD');
+        const formatItemDate = dayjs(item.date).format('YYYY-MM-DD');
         const itemDateList = dateMap.get(formatItemDate) || [];
         dateMap.set(formatItemDate, [ ...itemDateList, item ]);
       });
@@ -131,7 +133,7 @@ class BillController extends Controller {
         amount,
         type_id,
         type_name,
-        date: moment(date).format('YYYY-MM-DD HH:mm:ss'),
+        date: dayjs(date).format('YYYY-MM-DD HH:mm:ss'),
         pay_type,
         remark,
         user_id,
@@ -353,8 +355,8 @@ class BillController extends Controller {
       }
 
       // 使用moment.js解析传入的年月字符串，将日期设置为该月的最后一天
-      const startMonthFormat = moment(startMonth, 'YYYY-MM').startOf('month').format('YYYY-MM-DD');
-      const endMonthFormat = moment(endMonth, 'YYYY-MM').endOf('month').format('YYYY-MM-DD');
+      const startMonthFormat = dayjs(startMonth, 'YYYY-MM').startOf('month').format('YYYY-MM-DD');
+      const endMonthFormat = dayjs(endMonth, 'YYYY-MM').endOf('month').format('YYYY-MM-DD');
       const result = await ctx.service.bill.queyBillByMonthly({ user_id, startMonth: startMonthFormat, endMonth: endMonthFormat });
       const formateResult = result.map(item => {
         return {
