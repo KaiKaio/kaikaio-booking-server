@@ -2,13 +2,8 @@
 
 'use strict';
 
-// const fs = require('fs');
-// const path = require('path');
-
-let public_key;
-if (process.env.JWT_PUBLIC_KEY) {
-  public_key = process.env.JWT_PUBLIC_KEY;
-}
+const fs = require('fs');
+const path = require('path');
 
 /**
  * @param {Egg.EggAppInfo} appInfo app info
@@ -19,6 +14,24 @@ module.exports = appInfo => {
    * @type {Egg.EggAppConfig}
    **/
   const config = exports = {};
+
+  let public_key = process.env.JWT_PUBLIC_KEY;
+
+  if (!public_key) {
+    const keyPath = path.join(appInfo.baseDir, 'config/ssl_key/rsa_public_key.pem');
+    if (fs.existsSync(keyPath)) {
+      public_key = fs.readFileSync(keyPath, 'utf8');
+    }
+  } else {
+    // Fix for PowerShell/Docker env var flattening newlines
+    const header = '-----BEGIN PUBLIC KEY-----';
+    const footer = '-----END PUBLIC KEY-----';
+    if (public_key.includes(header) && public_key.includes(footer) && !public_key.includes('\n')) {
+       // Remove header, footer, and spaces, then reconstruct
+       let body = public_key.replace(header, '').replace(footer, '').replace(/\s/g, '');
+       public_key = `${header}\n${body}\n${footer}`;
+    }
+  }
 
   // use for cookie sign key, should change to your own and keep security
   config.keys = appInfo.name + '_1606747991901_2392';
