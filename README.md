@@ -1,5 +1,7 @@
 # Kaikaio - Booking Server
 
+> 📖 [English](README.en.md)
+
 Kaikaio-Booking 服务端项目，基于 Egg.js 框架构建的 RESTful API 服务。
 
 ## 🌟 项目简介

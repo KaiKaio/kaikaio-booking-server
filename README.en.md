@@ -1,5 +1,7 @@
 # Kaikaio - Booking Server
 
+> 📖 [中文版](README.md)
+
 Kaikaio Diary backend service, a RESTful API service built on Egg.js.
 
 ## 🌟 Project Overview
