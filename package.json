@@ -1,7 +1,7 @@
 {
   "name": "jue-diary-server",
   "version": "1.0.0",
-  "description": "掘掘手札服务端项目",
+  "description": "Kaikaio-Booking 服务端项目",
   "private": true,
   "egg": {
     "declarations": true

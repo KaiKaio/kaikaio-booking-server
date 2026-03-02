@@ -1,10 +1,10 @@
 # Kaikaio - Booking Server
 
-掘掘手札服务端项目，基于 Egg.js 框架构建的 RESTful API 服务。
+Kaikaio-Booking 服务端项目，基于 Egg.js 框架构建的 RESTful API 服务。
 
 ## 🌟 项目简介
 
-Kaikaio Booking Server 是掘掘手札项目的后端服务，提供用户、账单、书单、笔记等核心功能的 API 支持。
+Kaikaio Booking Server 是 Kaikaio-Booking 项目的后端服务，提供用户、账单、书单、笔记等核心功能的 API 支持。
 
 **技术栈：** Egg.js、MySQL、JWT、dayjs
 
