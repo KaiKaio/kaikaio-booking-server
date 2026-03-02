@@ -113,7 +113,7 @@ class BillService extends Service {
   async queyBillByMonthly({ user_id, startMonth, endMonth }) {
     const { app } = this;
     try {
-      const result = app.mysql.query(
+      const result = await app.mysql.query(
         `SELECT
           DATE_FORMAT( date, '%Y-%m' ) AS month,
           SUM( amount ) AS total_expense 

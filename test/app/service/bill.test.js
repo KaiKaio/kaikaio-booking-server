@@ -1,46 +1,45 @@
 'use strict';
 
-const { app, assert } = require('egg-mock/bootstrap');
+const { app, mock, assert } = require('egg-mock/bootstrap');
 
 describe('test/app/service/bill.test.js', () => {
   describe('BillService', () => {
     let ctx;
 
     before(() => {
+      app.mockDataScope = fn => {
+        return fn();
+      };
       ctx = app.mockContext();
     });
 
     describe('list()', () => {
       it('should return bill list with correct structure', async () => {
-        // Mock MySQL query responses
-        app.mockDataScope(() => {
-          app.mockService({
-            name: 'bill',
-            methodName: 'list',
-            params: {
-              id: 1,
-              start: '2026-01-01',
-              end: '2026-12-31',
-              pageNum: 1,
-              pageSize: 10,
-            },
-            result: {
-              result: [
-                {
-                  id: 1,
-                  pay_type: '1',
-                  amount: '50.00',
-                  date: '2026-01-15',
-                  type_id: '1',
-                  type_name: '餐饮',
-                  remark: '午餐',
-                },
-              ],
-              total: [{ 'COUNT(*)': 10 }],
-              expenseTotal: [{ 'SUM(amount)': 500.00 }],
-              incomeTotal: [{ 'SUM(amount)': 1000.00 }],
-            },
-          });
+        const mockResult = [
+          {
+            id: 1,
+            pay_type: '1',
+            amount: '50.00',
+            date: '2026-01-15',
+            type_id: '1',
+            type_name: '餐饮',
+            remark: '午餐',
+          },
+        ];
+        const mockTotal = [{ 'COUNT(*)': 10 }];
+        const mockExpenseTotal = [{ 'SUM(amount)': 500.00 }];
+        const mockIncomeTotal = [{ 'SUM(amount)': 1000.00 }];
+
+        let callCount = 0;
+        mock(app, 'mysql', {
+          query: async () => {
+            callCount++;
+            if (callCount === 1) return mockResult;
+            if (callCount === 2) return mockTotal;
+            if (callCount === 3) return mockExpenseTotal;
+            if (callCount === 4) return mockIncomeTotal;
+            return [];
+          },
         });
 
         const result = await ctx.service.bill.list({
@@ -60,24 +59,21 @@ describe('test/app/service/bill.test.js', () => {
       });
 
       it('should handle pagination', async () => {
-        app.mockDataScope(() => {
-          app.mockService({
-            name: 'bill',
-            methodName: 'list',
-            params: {
-              id: 1,
-              start: '2026-01-01',
-              end: '2026-12-31',
-              pageNum: 2,
-              pageSize: 20,
-            },
-            result: {
-              result: [],
-              total: [{ 'COUNT(*)': 50 }],
-              expenseTotal: [{ 'SUM(amount)': 0 }],
-              incomeTotal: [{ 'SUM(amount)': 0 }],
-            },
-          });
+        const mockResult = [];
+        const mockTotal = [{ 'COUNT(*)': 50 }];
+        const mockExpenseTotal = [{ 'SUM(amount)': 0 }];
+        const mockIncomeTotal = [{ 'SUM(amount)': 0 }];
+
+        let callCount = 0;
+        mock(app, 'mysql', {
+          query: async () => {
+            callCount++;
+            if (callCount === 1) return mockResult;
+            if (callCount === 2) return mockTotal;
+            if (callCount === 3) return mockExpenseTotal;
+            if (callCount === 4) return mockIncomeTotal;
+            return [];
+          },
         });
 
         const result = await ctx.service.bill.list({
@@ -93,25 +89,21 @@ describe('test/app/service/bill.test.js', () => {
       });
 
       it('should filter by type_id', async () => {
-        app.mockDataScope(() => {
-          app.mockService({
-            name: 'bill',
-            methodName: 'list',
-            params: {
-              id: 1,
-              start: '2026-01-01',
-              end: '2026-12-31',
-              type_id: '1',
-              pageNum: 1,
-              pageSize: 10,
-            },
-            result: {
-              result: [],
-              total: [{ 'COUNT(*)': 5 }],
-              expenseTotal: [{ 'SUM(amount)': 100.00 }],
-              incomeTotal: [{ 'SUM(amount)': 0 }],
-            },
-          });
+        const mockResult = [];
+        const mockTotal = [{ 'COUNT(*)': 5 }];
+        const mockExpenseTotal = [{ 'SUM(amount)': 100.00 }];
+        const mockIncomeTotal = [{ 'SUM(amount)': 0 }];
+
+        let callCount = 0;
+        mock(app, 'mysql', {
+          query: async () => {
+            callCount++;
+            if (callCount === 1) return mockResult;
+            if (callCount === 2) return mockTotal;
+            if (callCount === 3) return mockExpenseTotal;
+            if (callCount === 4) return mockIncomeTotal;
+            return [];
+          },
         });
 
         const result = await ctx.service.bill.list({
@@ -129,27 +121,9 @@ describe('test/app/service/bill.test.js', () => {
 
     describe('getEarliestItemDate()', () => {
       it('should return earliest bill date', async () => {
-        app.mockDataScope(() => {
-          app.mockService({
-            name: 'bill',
-            methodName: 'getEarliestItemDate',
-            params: {
-              user_id: 1,
-              type_id: '1',
-            },
-            result: [
-              {
-                EarliestDate: '2026-01-01',
-              },
-            ],
-          });
-          app.mysql = {
-            query: async () => [
-              {
-                EarliestDate: '2026-01-01',
-              },
-            ],
-          };
+        const mockResult = [{ EarliestDate: '2026-01-01' }];
+        mock(app, 'mysql', {
+          query: async () => mockResult,
         });
 
         const result = await ctx.service.bill.getEarliestItemDate({
@@ -163,14 +137,9 @@ describe('test/app/service/bill.test.js', () => {
       });
 
       it('should work without type_id filter', async () => {
-        app.mockDataScope(() => {
-          app.mysql = {
-            query: async () => [
-              {
-                EarliestDate: '2026-01-01',
-              },
-            ],
-          };
+        const mockResult = [{ EarliestDate: '2026-01-01' }];
+        mock(app, 'mysql', {
+          query: async () => mockResult,
         });
 
         const result = await ctx.service.bill.getEarliestItemDate({
@@ -212,6 +181,7 @@ describe('test/app/service/bill.test.js', () => {
       });
 
       it('should handle errors', async () => {
+        // 模拟数据库查询抛出异常的情况
         app.mockDataScope(() => {
           app.mysql = {
             query: async () => {
@@ -220,12 +190,14 @@ describe('test/app/service/bill.test.js', () => {
           };
         });
 
+        // 调用 service.bill.add 方法，传入测试数据
         const result = await ctx.service.bill.add({
           user_id: 1,
           pay_type: '1',
           amount: '50.00',
         });
 
+        // 断言结果为 null，验证错误是否被正确捕获并处理
         assert(result === null);
       });
     });

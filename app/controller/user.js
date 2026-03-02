@@ -2,6 +2,8 @@
 
 const Controller = require('egg').Controller;
 
+const defaultAvatar = 'http://s.yezgea02.com/1615973940679/WeChat77d6d2ac093e24b8013f40d1f2fa98a2.png';
+
 class UserController extends Controller {
   async register() {
     const { ctx } = this;

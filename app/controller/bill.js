@@ -208,7 +208,7 @@ class BillController extends Controller {
         amount,
         type_id,
         type_name,
-        date: moment(date).format('YYYY-MM-DD HH:mm:ss'),
+        date: dayjs(date).format('YYYY-MM-DD HH:mm:ss'),
         pay_type,
         remark,
         user_id,
