@@ -27,9 +27,9 @@ module.exports = appInfo => {
     const header = '-----BEGIN PUBLIC KEY-----';
     const footer = '-----END PUBLIC KEY-----';
     if (public_key.includes(header) && public_key.includes(footer) && !public_key.includes('\n')) {
-       // Remove header, footer, and spaces, then reconstruct
-       let body = public_key.replace(header, '').replace(footer, '').replace(/\s/g, '');
-       public_key = `${header}\n${body}\n${footer}`;
+      // Remove header, footer, and spaces, then reconstruct
+      const body = public_key.replace(header, '').replace(footer, '').replace(/\s/g, '');
+      public_key = `${header}\n${body}\n${footer}`;
     }
   }
 

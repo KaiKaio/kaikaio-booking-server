@@ -1,26 +1,23 @@
 'use strict';
 
-const path = require('path')
-
 const Controller = require('egg').Controller;
 
 class NoteController extends Controller {
   async list() {
     const { ctx, app } = this;
-    let user_id
     // 通过 token 解析，拿到 user_id
     const token = ctx.request.header.authorization;
     const decode = await app.jwt.verify(token, app.config.jwt.secret);
-    if (!decode) return
-    user_id = decode.userid
-    const list = await ctx.service.note.list(user_id)
+    if (!decode) return;
+    const user_id = decode.userid;
+    const list = await ctx.service.note.list(user_id);
     ctx.body = {
       code: 200,
       msg: '请求成功',
       data: {
-        list
-      }
-    }
+        list,
+      },
+    };
   }
 
   async add() {
@@ -31,33 +28,32 @@ class NoteController extends Controller {
       ctx.body = {
         code: 400,
         msg: '参数错误',
-        data: null
-      }
+        data: null,
+      };
     }
 
     try {
-      let user_id
       const token = ctx.request.header.authorization;
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
-      if (!decode) return
-      user_id = decode.userid
-      const result = await ctx.service.note.add({
+      if (!decode) return;
+      const user_id = decode.userid;
+      await ctx.service.note.add({
         content: note,
         create_time: new Date().getTime(),
         update_time: new Date().getTime(),
-        user_id
+        user_id,
       });
       ctx.body = {
         code: 200,
         msg: '请求成功',
-        data: null
-      }
+        data: null,
+      };
     } catch (error) {
       ctx.body = {
         code: 500,
         msg: '系统错误',
-        data: null
-      }
+        data: null,
+      };
     }
   }
 
@@ -69,28 +65,27 @@ class NoteController extends Controller {
       ctx.body = {
         code: 400,
         msg: '参数错误',
-        data: null
-      }
+        data: null,
+      };
     }
 
     try {
-      let user_id
       const token = ctx.request.header.authorization;
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
-      if (!decode) return
-      user_id = decode.userid
-      const result = await ctx.service.note.delete(id, user_id);
+      if (!decode) return;
+      const user_id = decode.userid;
+      await ctx.service.note.delete(id, user_id);
       ctx.body = {
         code: 200,
         msg: '请求成功',
-        data: null
-      }
+        data: null,
+      };
     } catch (error) {
       ctx.body = {
         code: 500,
         msg: '系统错误',
-        data: null
-      }
+        data: null,
+      };
     }
   }
 
@@ -98,31 +93,39 @@ class NoteController extends Controller {
     const { ctx, app } = this;
     const { id, note } = ctx.request.body;
 
+    if (!id) {
+      ctx.body = {
+        code: 400,
+        msg: '参数错误',
+        data: null,
+      };
+    }
+
     try {
-      let user_id
       const token = ctx.request.header.authorization;
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
-      if (!decode) return
-      user_id = decode.userid
-      const result = await ctx.service.note.update({
+      if (!decode) return;
+      const user_id = decode.userid;
+      await ctx.service.note.update({
         id,
         content: note,
         update_time: new Date().getTime(),
-        user_id
+        user_id,
       });
       ctx.body = {
         code: 200,
         msg: '请求成功',
-        data: null
-      }
+        data: null,
+      };
     } catch (error) {
       ctx.body = {
         code: 500,
         msg: '系统错误',
-        data: null
-      }
+        data: null,
+      };
     }
   }
 }
 
 module.exports = NoteController;
+
