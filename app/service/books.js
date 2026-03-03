@@ -8,14 +8,13 @@ class BooksService extends Service {
   }) {
     const { app } = this;
 
-    const sql = `
-      select id, name 
-      from books 
-      where user_id = ${userId}
-    `;
+    const sql = 'SELECT'
+      + ' id, name'
+      + ' FROM books'
+      + ' WHERE user_id = ?';
 
     try {
-      const result = await app.mysql.query(sql);
+      const result = await app.mysql.query(sql, [ userId ]);
       return result;
     } catch (error) {
       console.log(error, 'Service - Books - Error');

@@ -8,9 +8,9 @@ class NoteService extends Service {
   async list(id) {
     const { app } = this;
     const QUERY_STR = 'id, content, create_time, update_time';
-    const sql = `select ${QUERY_STR} from note where user_id = ${id} order by create_time desc`;
+    const sql = 'SELECT ' + QUERY_STR + ' FROM note WHERE user_id = ? ORDER BY create_time DESC';
     try {
-      const result = await app.mysql.query(sql);
+      const result = await app.mysql.query(sql, [ id ]);
       return result;
     } catch (error) {
       console.log(error);
