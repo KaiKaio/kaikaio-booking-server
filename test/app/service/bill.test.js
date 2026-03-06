@@ -8,10 +8,6 @@ describe('test/app/service/bill.test.js', () => {
 
     // 在所有测试运行前初始化 mock 上下文
     before(() => {
-      // 模拟 app.mockDataScope 方法，使其直接执行回调函数
-      app.mockDataScope = fn => {
-        return fn();
-      };
       // 创建模拟的请求上下文
       ctx = app.mockContext();
     });
@@ -41,21 +37,19 @@ describe('test/app/service/bill.test.js', () => {
         // 模拟数据库返回的总收入
         const mockIncomeTotal = [{ 'SUM(amount)': 1000.00 }];
 
-        let callCount = 0;
         // 模拟 app.mysql.query 方法
-        // 注意：这种基于调用次数的 mock 方式较为脆弱，如果业务逻辑中查询顺序改变，测试将失败
+        // 优化：根据 SQL 语句特征返回对应的 Mock 数据，避免依赖调用顺序
         mock(app, 'mysql', {
-          query: async () => {
-            callCount++;
-            // 第1次调用：查询账单列表
-            if (callCount === 1) return mockResult;
-            // 第2次调用：查询总记录数
-            if (callCount === 2) return mockTotal;
-            // 第3次调用：查询总支出
-            if (callCount === 3) return mockExpenseTotal;
-            // 第4次调用：查询总收入
-            if (callCount === 4) return mockIncomeTotal;
-            return [];
+          query: async sql => {
+            if (!sql) return [];
+            // SQL 包含 COUNT(*) -> 返回总数
+            if (sql.includes('COUNT(*)')) return mockTotal;
+            // SQL 包含 SUM(amount) 且 pay_type = 1 -> 返回总支出
+            if (sql.includes('SUM(amount)') && sql.includes('pay_type = 1')) return mockExpenseTotal;
+            // SQL 包含 SUM(amount) 且 pay_type = 2 -> 返回总收入
+            if (sql.includes('SUM(amount)') && sql.includes('pay_type = 2')) return mockIncomeTotal;
+            // 默认返回账单列表
+            return mockResult;
           },
         });
 
@@ -75,6 +69,7 @@ describe('test/app/service/bill.test.js', () => {
         assert(result.expenseTotal); // 总支出
         assert(result.incomeTotal); // 总收入
         assert(Array.isArray(result.result));
+        assert(result.result[0].id === 1); // 验证具体数据
       });
 
       it('should handle pagination', async () => {
@@ -83,15 +78,13 @@ describe('test/app/service/bill.test.js', () => {
         const mockExpenseTotal = [{ 'SUM(amount)': 0 }];
         const mockIncomeTotal = [{ 'SUM(amount)': 0 }];
 
-        let callCount = 0;
         mock(app, 'mysql', {
-          query: async () => {
-            callCount++;
-            if (callCount === 1) return mockResult;
-            if (callCount === 2) return mockTotal;
-            if (callCount === 3) return mockExpenseTotal;
-            if (callCount === 4) return mockIncomeTotal;
-            return [];
+          query: async sql => {
+            if (!sql) return [];
+            if (sql.includes('COUNT(*)')) return mockTotal;
+            if (sql.includes('SUM(amount)') && sql.includes('pay_type = 1')) return mockExpenseTotal;
+            if (sql.includes('SUM(amount)') && sql.includes('pay_type = 2')) return mockIncomeTotal;
+            return mockResult;
           },
         });
 
@@ -114,15 +107,13 @@ describe('test/app/service/bill.test.js', () => {
         const mockExpenseTotal = [{ 'SUM(amount)': 100.00 }];
         const mockIncomeTotal = [{ 'SUM(amount)': 0 }];
 
-        let callCount = 0;
         mock(app, 'mysql', {
-          query: async () => {
-            callCount++;
-            if (callCount === 1) return mockResult;
-            if (callCount === 2) return mockTotal;
-            if (callCount === 3) return mockExpenseTotal;
-            if (callCount === 4) return mockIncomeTotal;
-            return [];
+          query: async sql => {
+            if (!sql) return [];
+            if (sql.includes('COUNT(*)')) return mockTotal;
+            if (sql.includes('SUM(amount)') && sql.includes('pay_type = 1')) return mockExpenseTotal;
+            if (sql.includes('SUM(amount)') && sql.includes('pay_type = 2')) return mockIncomeTotal;
+            return mockResult;
           },
         });
 
@@ -192,14 +183,13 @@ describe('test/app/service/bill.test.js', () => {
         };
 
         // 模拟事务和数据库操作
-        app.mockDataScope(() => {
-          app.mysql = {
-            query: async () => undefined, // 模拟 query 操作
-            insert: async () => ({
-              affectedRows: 1, // 模拟插入成功
-              insertId: 10,    // 模拟新记录ID
-            }),
-          };
+        // 优化：统一使用 mock(app, 'mysql', ...) 替代 app.mockDataScope
+        mock(app, 'mysql', {
+          query: async () => undefined, // 模拟 query 操作 (SET NAMES utf8mb4)
+          insert: async () => ({
+            affectedRows: 1, // 模拟插入成功
+            insertId: 10, // 模拟新记录ID
+          }),
         });
 
         const result = await ctx.service.bill.add(billParams);
@@ -212,12 +202,10 @@ describe('test/app/service/bill.test.js', () => {
 
       it('should handle errors', async () => {
         // 模拟数据库查询抛出异常的情况
-        app.mockDataScope(() => {
-          app.mysql = {
-            query: async () => {
-              throw new Error('Database error');
-            },
-          };
+        mock(app, 'mysql', {
+          query: async () => {
+            throw new Error('Database error');
+          },
         });
 
         // 调用 service.bill.add 方法，传入测试数据
@@ -238,19 +226,17 @@ describe('test/app/service/bill.test.js', () => {
     describe('detail()', () => {
       it('should return bill detail', async () => {
         // 模拟数据库 get 操作返回账单详情
-        app.mockDataScope(() => {
-          app.mysql = {
-            get: async () => ({
-              id: 1,
-              user_id: 1,
-              pay_type: '1',
-              amount: '50.00',
-              date: '2026-01-15',
-              type_id: '1',
-              type_name: '餐饮',
-              remark: '午餐',
-            }),
-          };
+        mock(app, 'mysql', {
+          get: async () => ({
+            id: 1,
+            user_id: 1,
+            pay_type: '1',
+            amount: '50.00',
+            date: '2026-01-15',
+            type_id: '1',
+            type_name: '餐饮',
+            remark: '午餐',
+          }),
         });
 
         const result = await ctx.service.bill.detail(1, 1);
@@ -263,10 +249,8 @@ describe('test/app/service/bill.test.js', () => {
 
       it('should return null for non-existent bill', async () => {
         // 模拟数据库 get 操作返回 null（未找到记录）
-        app.mockDataScope(() => {
-          app.mysql = {
-            get: async () => null,
-          };
+        mock(app, 'mysql', {
+          get: async () => null,
         });
 
         const result = await ctx.service.bill.detail(999, 1);
@@ -292,12 +276,10 @@ describe('test/app/service/bill.test.js', () => {
         };
 
         // 模拟数据库 update 操作
-        app.mockDataScope(() => {
-          app.mysql = {
-            update: async () => ({
-              affectedRows: 1, // 模拟更新成功
-            }),
-          };
+        mock(app, 'mysql', {
+          update: async () => ({
+            affectedRows: 1, // 模拟更新成功
+          }),
         });
 
         const result = await ctx.service.bill.update(updateParams);
@@ -309,12 +291,10 @@ describe('test/app/service/bill.test.js', () => {
 
       it('should handle errors', async () => {
         // 模拟数据库更新操作抛出异常
-        app.mockDataScope(() => {
-          app.mysql = {
-            update: async () => {
-              throw new Error('Database error');
-            },
-          };
+        mock(app, 'mysql', {
+          update: async () => {
+            throw new Error('Database error');
+          },
         });
 
         const result = await ctx.service.bill.update({
@@ -333,12 +313,10 @@ describe('test/app/service/bill.test.js', () => {
     describe('delete()', () => {
       it('should delete bill successfully', async () => {
         // 模拟数据库 delete 操作
-        app.mockDataScope(() => {
-          app.mysql = {
-            delete: async () => ({
-              affectedRows: 1, // 模拟删除成功
-            }),
-          };
+        mock(app, 'mysql', {
+          delete: async () => ({
+            affectedRows: 1, // 模拟删除成功
+          }),
         });
 
         const result = await ctx.service.bill.delete(1, 1);
@@ -350,12 +328,10 @@ describe('test/app/service/bill.test.js', () => {
 
       it('should handle non-existent bill', async () => {
         // 模拟删除不存在的记录
-        app.mockDataScope(() => {
-          app.mysql = {
-            delete: async () => ({
-              affectedRows: 0, // 影响行数为0
-            }),
-          };
+        mock(app, 'mysql', {
+          delete: async () => ({
+            affectedRows: 0, // 影响行数为0
+          }),
         });
 
         const result = await ctx.service.bill.delete(999, 1);
@@ -372,19 +348,17 @@ describe('test/app/service/bill.test.js', () => {
     describe('queryBillByMonthly()', () => {
       it('should return monthly expense summary', async () => {
         // 模拟数据库返回按月统计数据
-        app.mockDataScope(() => {
-          app.mysql = {
-            query: async () => [
-              {
-                month: '2026-01',
-                total_expense: 1000.00,
-              },
-              {
-                month: '2026-02',
-                total_expense: 800.00,
-              },
-            ],
-          };
+        mock(app, 'mysql', {
+          query: async () => [
+            {
+              month: '2026-01',
+              total_expense: 1000.00,
+            },
+            {
+              month: '2026-02',
+              total_expense: 800.00,
+            },
+          ],
         });
 
         const result = await ctx.service.bill.queyBillByMonthly({
@@ -403,12 +377,10 @@ describe('test/app/service/bill.test.js', () => {
 
       it('should handle errors', async () => {
         // 模拟数据库查询异常
-        app.mockDataScope(() => {
-          app.mysql = {
-            query: async () => {
-              throw new Error('Database error');
-            },
-          };
+        mock(app, 'mysql', {
+          query: async () => {
+            throw new Error('Database error');
+          },
         });
 
         const result = await ctx.service.bill.queyBillByMonthly({

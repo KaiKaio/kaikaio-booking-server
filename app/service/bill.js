@@ -40,7 +40,7 @@ class BillService extends Service {
       const incomeTotal = await app.mysql.query(inComeSql);
       return { result, total, expenseTotal, incomeTotal };
     } catch (error) {
-      console.log(error, 'Service - Bill - Error');
+      console.log('Service - Bill - list - Error:', error.message);
       return null;
     }
   }
@@ -51,7 +51,7 @@ class BillService extends Service {
       const result = await app.mysql.query(`SELECT MIN(date) as EarliestDate FROM bill WHERE user_id='${user_id}'${type_id ? ` AND type_id = ${type_id}` : ''}`);
       return result;
     } catch (error) {
-      console.log(error, 'Service - Bill - getEarliestItemDate - Error');
+      console.log('Service - Bill - getEarliestItemDate - Error:', error.message);
       return null;
     }
   }
@@ -63,7 +63,7 @@ class BillService extends Service {
       const result = await app.mysql.insert('bill', params);
       return result;
     } catch (error) {
-      console.log(error);
+      console.log('Service - Bill - add - Error:', error.message);
       return null;
     }
   }
@@ -71,11 +71,10 @@ class BillService extends Service {
   async detail(id, user_id) {
     const { app } = this;
     try {
-      console.log(id, user_id, 'idididid');
       const result = await app.mysql.get('bill', { id, user_id });
       return result;
     } catch (error) {
-      console.log(error);
+      console.log('Service - Bill - detail - Error:', error.message);
       return null;
     }
   }
@@ -91,7 +90,7 @@ class BillService extends Service {
       });
       return result;
     } catch (error) {
-      console.log(error);
+      console.log('Service - Bill - update - Error:', error.message);
       return null;
     }
   }
@@ -105,7 +104,7 @@ class BillService extends Service {
       });
       return result;
     } catch (error) {
-      console.log(error);
+      console.log('Service - Bill - delete - Error:', error.message);
       return null;
     }
   }
@@ -130,7 +129,7 @@ class BillService extends Service {
           month`);
       return result;
     } catch (error) {
-      console.error(error);
+      console.log('Service - Bill - queyBillByMonthly - Error:', error.message);
       return null;
     }
   }
