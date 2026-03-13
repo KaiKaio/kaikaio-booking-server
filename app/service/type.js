@@ -13,7 +13,7 @@ class TypeService extends Service {
       const result = await app.mysql.query(sql);
       return result;
     } catch (error) {
-      console.log(error);
+      console.log('Service - Type - list - Error:', error.message);
       return null;
     }
   }
