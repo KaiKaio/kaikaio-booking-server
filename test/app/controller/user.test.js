@@ -29,7 +29,7 @@ describe('test/app/controller/user.test.js', () => {
       it('should return error when username already exists', async () => {
         // Mock getUserByName to return existing user
         mock(app, 'mysql', {
-          get: async () => [{ id: 1, username: 'test' }],
+          get: async () => ({ id: 1, username: 'test' }),
         });
 
         const res = await app.httpRequest()
@@ -44,7 +44,7 @@ describe('test/app/controller/user.test.js', () => {
       it('should register successfully', async () => {
         // Mock getUserByName to return null (user not exists)
         mock(app, 'mysql', {
-          get: async () => [],
+          get: async () => null,
           insert: async () => ({ affectedRows: 1, insertId: 1 }),
         });
 
@@ -60,7 +60,7 @@ describe('test/app/controller/user.test.js', () => {
       it('should return error when register fails', async () => {
         // Mock getUserByName to return null, but insert fails
         mock(app, 'mysql', {
-          get: async () => [],
+          get: async () => null,
           insert: async () => null,
         });
 
@@ -79,7 +79,7 @@ describe('test/app/controller/user.test.js', () => {
       it('should return error when user not exists', async () => {
         // Mock getUserByName to return null
         mock(app, 'mysql', {
-          get: async () => [],
+          get: async () => null,
         });
 
         const res = await app.httpRequest()
@@ -311,7 +311,7 @@ describe('test/app/controller/user.test.js', () => {
         );
 
         const res = await app.httpRequest()
-          .get('/api/user/verify')
+          .post('/api/user/verify')
           .set('Authorization', token);
 
         assert(res.status === 200);
@@ -320,7 +320,7 @@ describe('test/app/controller/user.test.js', () => {
 
       it('should return 401 for invalid token', async () => {
         const res = await app.httpRequest()
-          .get('/api/user/verify')
+          .post('/api/user/verify')
           .set('Authorization', 'invalid-token');
 
         assert(res.status === 401);
