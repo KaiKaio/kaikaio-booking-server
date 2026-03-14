@@ -29,7 +29,7 @@ describe('test/app/controller/user.test.js', () => {
       it('should return error when username already exists', async () => {
         // Mock getUserByName to return existing user
         mock(app, 'mysql', {
-          query: async () => [{ id: 1, username: 'test' }],
+          get: async () => [{ id: 1, username: 'test' }],
         });
 
         const res = await app.httpRequest()
@@ -44,7 +44,7 @@ describe('test/app/controller/user.test.js', () => {
       it('should register successfully', async () => {
         // Mock getUserByName to return null (user not exists)
         mock(app, 'mysql', {
-          query: async () => [],
+          get: async () => [],
           insert: async () => ({ affectedRows: 1, insertId: 1 }),
         });
 
@@ -60,7 +60,7 @@ describe('test/app/controller/user.test.js', () => {
       it('should return error when register fails', async () => {
         // Mock getUserByName to return null, but insert fails
         mock(app, 'mysql', {
-          query: async () => [],
+          get: async () => [],
           insert: async () => null,
         });
 
@@ -79,7 +79,7 @@ describe('test/app/controller/user.test.js', () => {
       it('should return error when user not exists', async () => {
         // Mock getUserByName to return null
         mock(app, 'mysql', {
-          query: async () => [],
+          get: async () => [],
         });
 
         const res = await app.httpRequest()
@@ -94,7 +94,7 @@ describe('test/app/controller/user.test.js', () => {
       it('should return error when password is wrong', async () => {
         // Mock getUserByName to return user with different password
         mock(app, 'mysql', {
-          query: async () => [{ id: 1, username: 'test', password: 'wrongpass' }],
+          get: async () => [{ id: 1, username: 'test', password: 'wrongpass' }],
         });
 
         const res = await app.httpRequest()
@@ -109,7 +109,7 @@ describe('test/app/controller/user.test.js', () => {
       it('should login successfully', async () => {
         // Mock getUserByName to return correct user
         mock(app, 'mysql', {
-          query: async () => [{ id: 1, username: 'test', password: '123456' }],
+          get: async () => [{ id: 1, username: 'test', password: '123456' }],
         });
 
         const res = await app.httpRequest()
@@ -139,7 +139,7 @@ describe('test/app/controller/user.test.js', () => {
         });
 
         const res = await app.httpRequest()
-          .get('/api/user/getUserInfo')
+          .get('/api/user/get_userinfo')
           .set('Authorization', token);
 
         assert(res.status === 200);
@@ -159,7 +159,7 @@ describe('test/app/controller/user.test.js', () => {
         });
 
         const res = await app.httpRequest()
-          .get('/api/user/getUserInfo')
+          .get('/api/user/get_userinfo')
           .set('Authorization', token);
 
         assert(res.status === 200);
@@ -179,12 +179,12 @@ describe('test/app/controller/user.test.js', () => {
 
         // Mock getUserByName to return user
         mock(app, 'mysql', {
-          query: async () => [{ id: 1, username: 'test', signature: 'old', avatar: 'old.png' }],
+          get: async () => ({ id: 1, username: 'test', signature: 'old', avatar: 'old.png' }),
           update: async () => ({ affectedRows: 1 }),
         });
 
         const res = await app.httpRequest()
-          .post('/api/user/editUserInfo')
+          .post('/api/user/edit_userinfo')
           .set('Authorization', token)
           .send({ signature: 'new signature', avatar: 'new.png' });
 
@@ -201,13 +201,13 @@ describe('test/app/controller/user.test.js', () => {
         );
 
         mock(app, 'mysql', {
-          query: async () => {
+          get: async () => {
             throw new Error('Database error');
           },
         });
 
         const res = await app.httpRequest()
-          .post('/api/user/editUserInfo')
+          .post('/api/user/edit_userinfo')
           .set('Authorization', token)
           .send({ signature: 'new signature' });
 
@@ -227,7 +227,7 @@ describe('test/app/controller/user.test.js', () => {
         );
 
         const res = await app.httpRequest()
-          .post('/api/user/modifyPass')
+          .post('/api/user/modify_pass')
           .set('Authorization', token)
           .send({ old_pass: '123', new_pass: '456', new_pass2: '456' });
 
@@ -244,11 +244,11 @@ describe('test/app/controller/user.test.js', () => {
         );
 
         mock(app, 'mysql', {
-          query: async () => [{ id: 1, username: 'test', password: 'correctpass' }],
+          get: async () => [{ id: 1, username: 'test', password: 'correctpass' }],
         });
 
         const res = await app.httpRequest()
-          .post('/api/user/modifyPass')
+          .post('/api/user/modify_pass')
           .set('Authorization', token)
           .send({ old_pass: 'wrongpass', new_pass: '456', new_pass2: '456' });
 
@@ -265,11 +265,11 @@ describe('test/app/controller/user.test.js', () => {
         );
 
         mock(app, 'mysql', {
-          query: async () => [{ id: 1, username: 'test', password: 'oldpass' }],
+          get: async () => [{ id: 1, username: 'test', password: 'oldpass' }],
         });
 
         const res = await app.httpRequest()
-          .post('/api/user/modifyPass')
+          .post('/api/user/modify_pass')
           .set('Authorization', token)
           .send({ old_pass: 'oldpass', new_pass: '456', new_pass2: '789' });
 
@@ -286,12 +286,12 @@ describe('test/app/controller/user.test.js', () => {
         );
 
         mock(app, 'mysql', {
-          query: async () => [{ id: 1, username: 'test', password: 'oldpass' }],
+          get: async () => [{ id: 1, username: 'test', password: 'oldpass' }],
           update: async () => ({ affectedRows: 1 }),
         });
 
         const res = await app.httpRequest()
-          .post('/api/user/modifyPass')
+          .post('/api/user/modify_pass')
           .set('Authorization', token)
           .send({ old_pass: 'oldpass', new_pass: 'newpass', new_pass2: 'newpass' });
 
