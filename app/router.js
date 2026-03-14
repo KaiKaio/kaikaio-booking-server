@@ -24,7 +24,16 @@ module.exports = app => {
   router.get('/api/bill/queyBillByMonthly', controller.bill.queyBillByMonthly);
 
   router.get('/api/books/list', _jwt, controller.books.list); // 获取账本列表
-  router.post('/api/books/add', _jwt, controller.books.add); // 获取账本列表
+  router.post('/api/books/add', _jwt, controller.books.add); // 添加账本
+
+  // Note 路由
+  router.get('/api/note/list', _jwt, controller.note.list); // 获取笔记列表
+  router.post('/api/note/add', _jwt, controller.note.add); // 添加笔记
+  router.post('/api/note/delete', _jwt, controller.note.delete); // 删除笔记
+  router.post('/api/note/update', _jwt, controller.note.update); // 更新笔记
+
+  // Upload 路由
+  router.post('/api/upload/upload', controller.upload.upload); // 上传文件
 
   router.post('/api/user/verify', controller.user.verify); // 验证token
 };
