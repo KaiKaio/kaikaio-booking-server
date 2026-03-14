@@ -23,7 +23,7 @@ describe('test/app/controller/note.test.js', () => {
         const res = await app.httpRequest()
           .get('/api/note/list')
           .set('Authorization', token);
-        
+
         assert(res.status === 200);
         assert(res.body.code === 200);
         assert(res.body.msg === '请求成功');
@@ -45,7 +45,7 @@ describe('test/app/controller/note.test.js', () => {
         const res = await app.httpRequest()
           .get('/api/note/list')
           .set('Authorization', token);
-        
+
         assert(res.status === 200);
         assert(res.body.code === 200);
         assert(Array.isArray(res.body.data.list));
@@ -55,7 +55,7 @@ describe('test/app/controller/note.test.js', () => {
       it('should return 401 when no token', async () => {
         const res = await app.httpRequest()
           .get('/api/note/list');
-        
+
         assert(res.status === 401);
       });
     });
@@ -73,7 +73,7 @@ describe('test/app/controller/note.test.js', () => {
           .post('/api/note/add')
           .set('Authorization', token)
           .send({ note: '' });
-        
+
         assert(res.status === 200);
         assert(res.body.code === 400);
         assert(res.body.msg === '参数错误');
@@ -94,7 +94,7 @@ describe('test/app/controller/note.test.js', () => {
           .post('/api/note/add')
           .set('Authorization', token)
           .send({ note: 'New Note' });
-        
+
         assert(res.status === 200);
         assert(res.body.code === 200);
         assert(res.body.msg === '请求成功');
@@ -117,7 +117,7 @@ describe('test/app/controller/note.test.js', () => {
           .post('/api/note/add')
           .set('Authorization', token)
           .send({ note: 'New Note' });
-        
+
         assert(res.status === 200);
         assert(res.body.code === 500);
         assert(res.body.msg === '系统错误');
@@ -137,7 +137,7 @@ describe('test/app/controller/note.test.js', () => {
           .post('/api/note/delete')
           .set('Authorization', token)
           .send({ id: '' });
-        
+
         assert(res.status === 200);
         assert(res.body.code === 400);
         assert(res.body.msg === '参数错误');
@@ -158,7 +158,7 @@ describe('test/app/controller/note.test.js', () => {
           .post('/api/note/delete')
           .set('Authorization', token)
           .send({ id: 1 });
-        
+
         assert(res.status === 200);
         assert(res.body.code === 200);
         assert(res.body.msg === '请求成功');
@@ -181,7 +181,7 @@ describe('test/app/controller/note.test.js', () => {
           .post('/api/note/delete')
           .set('Authorization', token)
           .send({ id: 1 });
-        
+
         assert(res.status === 200);
         assert(res.body.code === 500);
         assert(res.body.msg === '系统错误');
@@ -201,7 +201,7 @@ describe('test/app/controller/note.test.js', () => {
           .post('/api/note/update')
           .set('Authorization', token)
           .send({ id: '', note: 'Updated Note' });
-        
+
         assert(res.status === 200);
         assert(res.body.code === 400);
         assert(res.body.msg === '参数错误');
@@ -222,7 +222,7 @@ describe('test/app/controller/note.test.js', () => {
           .post('/api/note/update')
           .set('Authorization', token)
           .send({ id: 1, note: 'Updated Note' });
-        
+
         assert(res.status === 200);
         assert(res.body.code === 200);
         assert(res.body.msg === '请求成功');
@@ -245,7 +245,7 @@ describe('test/app/controller/note.test.js', () => {
           .post('/api/note/update')
           .set('Authorization', token)
           .send({ id: 1, note: 'Updated Note' });
-        
+
         assert(res.status === 200);
         assert(res.body.code === 500);
         assert(res.body.msg === '系统错误');

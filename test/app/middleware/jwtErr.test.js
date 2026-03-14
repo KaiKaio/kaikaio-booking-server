@@ -15,7 +15,7 @@ describe('test/app/middleware/jwtErr.test.js', () => {
     it('should call next() when token is valid', async () => {
       const middleware = require('../../../app/middleware/jwtErr');
       const secret = 'test-secret';
-      
+
       // Mock jwt.verify to succeed
       mock(app, 'jwt', {
         verify: async () => true,
@@ -39,7 +39,7 @@ describe('test/app/middleware/jwtErr.test.js', () => {
     it('should return 401 when token is invalid/expired', async () => {
       const middleware = require('../../../app/middleware/jwtErr');
       const secret = 'test-secret';
-      
+
       // Mock jwt.verify to throw error
       mock(app, 'jwt', {
         verify: async () => {

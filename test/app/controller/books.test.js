@@ -10,7 +10,7 @@ describe('test/app/controller/books.test.js', () => {
         const res = await app.httpRequest()
           .post('/api/books/add')
           .send({ name: '' });
-        
+
         assert(res.status === 200);
         assert(res.body.code === 400);
         assert(res.body.msg === '参数错误');
@@ -31,7 +31,7 @@ describe('test/app/controller/books.test.js', () => {
           .post('/api/books/add')
           .set('Authorization', token)
           .send({ name: 'New Book' });
-        
+
         assert(res.status === 200);
         assert(res.body.code === 200);
         assert(res.body.msg === '请求成功');
@@ -52,7 +52,7 @@ describe('test/app/controller/books.test.js', () => {
           .post('/api/books/add')
           .set('Authorization', token)
           .send({ name: 'New Book' });
-        
+
         assert(res.status === 200);
         assert(res.body.code === 500);
         assert(res.body.msg === '系统错误');
@@ -78,7 +78,7 @@ describe('test/app/controller/books.test.js', () => {
         const res = await app.httpRequest()
           .get('/api/books/list')
           .set('Authorization', token);
-        
+
         assert(res.status === 200);
         assert(res.body.code === 200);
         assert(res.body.msg === '请求成功');
@@ -100,7 +100,7 @@ describe('test/app/controller/books.test.js', () => {
         const res = await app.httpRequest()
           .get('/api/books/list')
           .set('Authorization', token);
-        
+
         assert(res.status === 200);
         assert(res.body.code === 200);
         assert(Array.isArray(res.body.data));
@@ -110,7 +110,7 @@ describe('test/app/controller/books.test.js', () => {
       it('should return 401 when no token', async () => {
         const res = await app.httpRequest()
           .get('/api/books/list');
-        
+
         assert(res.status === 401);
       });
 
@@ -128,7 +128,7 @@ describe('test/app/controller/books.test.js', () => {
         const res = await app.httpRequest()
           .get('/api/books/list')
           .set('Authorization', token);
-        
+
         assert(res.status === 200);
         assert(res.body.code === 200);
         assert(Array.isArray(res.body.data));

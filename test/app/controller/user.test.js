@@ -10,7 +10,7 @@ describe('test/app/controller/user.test.js', () => {
         const res = await app.httpRequest()
           .post('/api/user/register')
           .send({ username: '', password: '123456' });
-        
+
         assert(res.status === 200);
         assert(res.body.code === 500);
         assert(res.body.msg === '账号密码不能为空');
@@ -20,7 +20,7 @@ describe('test/app/controller/user.test.js', () => {
         const res = await app.httpRequest()
           .post('/api/user/register')
           .send({ username: 'test', password: '' });
-        
+
         assert(res.status === 200);
         assert(res.body.code === 500);
         assert(res.body.msg === '账号密码不能为空');
@@ -35,7 +35,7 @@ describe('test/app/controller/user.test.js', () => {
         const res = await app.httpRequest()
           .post('/api/user/register')
           .send({ username: 'test', password: '123456' });
-        
+
         assert(res.status === 200);
         assert(res.body.code === 500);
         assert(res.body.msg === '账户名已被注册，请重新输入');
@@ -51,7 +51,7 @@ describe('test/app/controller/user.test.js', () => {
         const res = await app.httpRequest()
           .post('/api/user/register')
           .send({ username: 'newuser', password: '123456' });
-        
+
         assert(res.status === 200);
         assert(res.body.code === 200);
         assert(res.body.msg === '注册成功');
@@ -67,7 +67,7 @@ describe('test/app/controller/user.test.js', () => {
         const res = await app.httpRequest()
           .post('/api/user/register')
           .send({ username: 'newuser', password: '123456' });
-        
+
         assert(res.status === 200);
         assert(res.body.code === 500);
         assert(res.body.msg === '注册失败');
@@ -85,7 +85,7 @@ describe('test/app/controller/user.test.js', () => {
         const res = await app.httpRequest()
           .post('/api/user/login')
           .send({ username: 'notexist', password: '123456' });
-        
+
         assert(res.status === 200);
         assert(res.body.code === 500);
         assert(res.body.msg === '账号不存在');
@@ -100,7 +100,7 @@ describe('test/app/controller/user.test.js', () => {
         const res = await app.httpRequest()
           .post('/api/user/login')
           .send({ username: 'test', password: '123456' });
-        
+
         assert(res.status === 200);
         assert(res.body.code === 500);
         assert(res.body.msg === '账号密码错误');
@@ -115,7 +115,7 @@ describe('test/app/controller/user.test.js', () => {
         const res = await app.httpRequest()
           .post('/api/user/login')
           .send({ username: 'test', password: '123456' });
-        
+
         assert(res.status === 200);
         assert(res.body.code === 200);
         assert(res.body.message === '登录成功');
@@ -141,7 +141,7 @@ describe('test/app/controller/user.test.js', () => {
         const res = await app.httpRequest()
           .get('/api/user/getUserInfo')
           .set('Authorization', token);
-        
+
         assert(res.status === 200);
         assert(res.body.code === 200);
         assert(res.body.data.username === 'test');
@@ -161,7 +161,7 @@ describe('test/app/controller/user.test.js', () => {
         const res = await app.httpRequest()
           .get('/api/user/getUserInfo')
           .set('Authorization', token);
-        
+
         assert(res.status === 200);
         assert(res.body.code === 200);
         assert(res.body.data.id === '');
@@ -187,7 +187,7 @@ describe('test/app/controller/user.test.js', () => {
           .post('/api/user/editUserInfo')
           .set('Authorization', token)
           .send({ signature: 'new signature', avatar: 'new.png' });
-        
+
         assert(res.status === 200);
         assert(res.body.code === 200);
         assert(res.body.data.signature === 'new signature');
@@ -210,7 +210,7 @@ describe('test/app/controller/user.test.js', () => {
           .post('/api/user/editUserInfo')
           .set('Authorization', token)
           .send({ signature: 'new signature' });
-        
+
         assert(res.status === 200);
         assert(res.body.code === 500);
         assert(res.body.msg === '系统错误');
@@ -230,7 +230,7 @@ describe('test/app/controller/user.test.js', () => {
           .post('/api/user/modifyPass')
           .set('Authorization', token)
           .send({ old_pass: '123', new_pass: '456', new_pass2: '456' });
-        
+
         assert(res.status === 200);
         assert(res.body.code === 400);
         assert(res.body.msg === '管理员账户，不允许修改密码！');
@@ -251,7 +251,7 @@ describe('test/app/controller/user.test.js', () => {
           .post('/api/user/modifyPass')
           .set('Authorization', token)
           .send({ old_pass: 'wrongpass', new_pass: '456', new_pass2: '456' });
-        
+
         assert(res.status === 200);
         assert(res.body.code === 400);
         assert(res.body.msg === '原密码错误');
@@ -272,7 +272,7 @@ describe('test/app/controller/user.test.js', () => {
           .post('/api/user/modifyPass')
           .set('Authorization', token)
           .send({ old_pass: 'oldpass', new_pass: '456', new_pass2: '789' });
-        
+
         assert(res.status === 200);
         assert(res.body.code === 400);
         assert(res.body.msg === '新密码不一致');
@@ -294,7 +294,7 @@ describe('test/app/controller/user.test.js', () => {
           .post('/api/user/modifyPass')
           .set('Authorization', token)
           .send({ old_pass: 'oldpass', new_pass: 'newpass', new_pass2: 'newpass' });
-        
+
         assert(res.status === 200);
         assert(res.body.code === 200);
         assert(res.body.msg === '请求成功');
@@ -313,7 +313,7 @@ describe('test/app/controller/user.test.js', () => {
         const res = await app.httpRequest()
           .get('/api/user/verify')
           .set('Authorization', token);
-        
+
         assert(res.status === 200);
         assert(res.body.code === 200);
       });
@@ -322,7 +322,7 @@ describe('test/app/controller/user.test.js', () => {
         const res = await app.httpRequest()
           .get('/api/user/verify')
           .set('Authorization', 'invalid-token');
-        
+
         assert(res.status === 401);
         assert(res.body.code === 401);
       });

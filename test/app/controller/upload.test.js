@@ -1,7 +1,7 @@
 'use strict';
 
 const { app, mock, assert } = require('egg-mock/bootstrap');
-const path = require('path');
+// const path = require('path');
 const fs = require('fs');
 
 describe('test/app/controller/upload.test.js', () => {
@@ -14,7 +14,7 @@ describe('test/app/controller/upload.test.js', () => {
         mock(fs, 'writeFileSync', () => {});
         mock(fs, 'existsSync', () => true);
         mock(fs, 'mkdirSync', () => {});
-        
+
         // Mock mkdirp
         mock(app, 'mkdirp', async () => {});
 
@@ -27,7 +27,7 @@ describe('test/app/controller/upload.test.js', () => {
         // Mock ctx.request.files
         app.mockContext({
           request: {
-            files: [mockFile],
+            files: [ mockFile ],
           },
         });
 
@@ -42,12 +42,12 @@ describe('test/app/controller/upload.test.js', () => {
       });
 
       it('should handle missing file', async () => {
-        // Mock ctx.request.files to be empty
-        const ctx = app.mockContext({
-          request: {
-            files: [],
-          },
-        });
+        // // Mock ctx.request.files to be empty
+        // const ctx = app.mockContext({
+        //   request: {
+        //     files: [],
+        //   },
+        // });
 
         // When there's no file, the controller should handle it
         // Let's test the actual endpoint
