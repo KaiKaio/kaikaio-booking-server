@@ -94,7 +94,7 @@ describe('test/app/controller/user.test.js', () => {
       it('should return error when password is wrong', async () => {
         // Mock getUserByName to return user with different password
         mock(app, 'mysql', {
-          get: async () => [{ id: 1, username: 'test', password: 'wrongpass' }],
+          get: async () => ({ id: 1, username: 'test', password: 'wrongpass' }),
         });
 
         const res = await app.httpRequest()

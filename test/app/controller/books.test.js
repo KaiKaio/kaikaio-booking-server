@@ -7,8 +7,15 @@ describe('test/app/controller/books.test.js', () => {
     // 测试 add - 添加书籍
     describe('add()', () => {
       it('should return error when name is empty', async () => {
+        const token = app.jwt.sign(
+          { id: 1, userid: 1, username: 'test' },
+          app.config.jwt.secret,
+          { expiresIn: '1h' }
+        );
+
         const res = await app.httpRequest()
           .post('/api/books/add')
+          .set('Authorization', token)
           .send({ name: '' });
 
         assert(res.status === 200);
