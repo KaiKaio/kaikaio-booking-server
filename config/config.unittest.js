@@ -11,3 +11,7 @@ exports.mysql = {
   app: false,
   agent: false,
 };
+
+exports.jwt = {
+  secret: '123456777',
+};
