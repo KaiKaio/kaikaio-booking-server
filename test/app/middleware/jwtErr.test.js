@@ -18,7 +18,7 @@ describe('test/app/middleware/jwtErr.test.js', () => {
 
       // Mock jwt.verify to succeed
       mock(app, 'jwt', {
-        verify: async () => true,
+        verify: () => true,
       });
 
       const next = async () => {
@@ -42,7 +42,7 @@ describe('test/app/middleware/jwtErr.test.js', () => {
 
       // Mock jwt.verify to throw error
       mock(app, 'jwt', {
-        verify: async () => {
+        verify: () => {
           throw new Error('Token expired');
         },
       });

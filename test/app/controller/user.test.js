@@ -109,7 +109,7 @@ describe('test/app/controller/user.test.js', () => {
       it('should login successfully', async () => {
         // Mock getUserByName to return correct user
         mock(app, 'mysql', {
-          get: async () => [{ id: 1, username: 'test', password: '123456' }],
+          get: async () => ({ id: 1, username: 'test', password: '123456' }),
         });
 
         const res = await app.httpRequest()
@@ -244,7 +244,7 @@ describe('test/app/controller/user.test.js', () => {
         );
 
         mock(app, 'mysql', {
-          get: async () => [{ id: 1, username: 'test', password: 'correctpass' }],
+          get: async () => ({ id: 1, username: 'test', password: 'correctpass' }),
         });
 
         const res = await app.httpRequest()
@@ -265,7 +265,7 @@ describe('test/app/controller/user.test.js', () => {
         );
 
         mock(app, 'mysql', {
-          get: async () => [{ id: 1, username: 'test', password: 'oldpass' }],
+          get: async () => ({ id: 1, username: 'test', password: 'oldpass' }),
         });
 
         const res = await app.httpRequest()
@@ -286,7 +286,7 @@ describe('test/app/controller/user.test.js', () => {
         );
 
         mock(app, 'mysql', {
-          get: async () => [{ id: 1, username: 'test', password: 'oldpass' }],
+          get: async () => ({ id: 1, username: 'test', password: 'oldpass' }),
           update: async () => ({ affectedRows: 1 }),
         });
 

@@ -21,7 +21,7 @@ describe('test/app/controller/upload.test.js', () => {
         // Create a mock file
         const mockFile = {
           filepath: '/tmp/mock-file.txt',
-          filename: 'test.png',
+          filename: 'test.csv',
         };
 
         // Mock ctx.request.files
@@ -33,7 +33,7 @@ describe('test/app/controller/upload.test.js', () => {
 
         const res = await app.httpRequest()
           .post('/api/upload/upload')
-          .attach('file', Buffer.from('test'), 'test.png');
+          .attach('file', Buffer.from('test'), 'test.csv');
 
         // Note: This is a simplified test. The actual file upload test
         // might need more complex mocking depending on the framework
