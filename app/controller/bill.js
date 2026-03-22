@@ -153,6 +153,60 @@ class BillController extends Controller {
     }
   }
 
+  async batchAdd() {
+    const { ctx, app } = this;
+    const list = ctx.request.body; // Expecting an array directly or a wrapper object
+
+    // Extract list if wrapped in an object like { list: [...] }
+    const bills = Array.isArray(list) ? list : (list && Array.isArray(list.list) ? list.list : []);
+
+    if (bills.length === 0) {
+      ctx.body = {
+        code: 400,
+        msg: '参数错误：需要提供账单数组',
+        data: null,
+      };
+      return;
+    }
+
+    try {
+      const token = ctx.request.header.authorization;
+      const decode = await app.jwt.verify(token, app.config.jwt.secret);
+      if (!decode) return;
+      const user_id = decode.userid;
+
+      const params = bills.map(item => {
+        const { amount, type_id, type_name, pay_type, remark = '', date } = item;
+        if (!amount || !type_id || !type_name || !pay_type || !date) {
+          throw new Error('参数错误');
+        }
+        return {
+          amount,
+          type_id,
+          type_name,
+          date: dayjs(date).format('YYYY-MM-DD HH:mm:ss'),
+          pay_type,
+          remark,
+          user_id,
+        };
+      });
+
+      await ctx.service.bill.batchAdd(params);
+
+      ctx.body = {
+        code: 200,
+        msg: '请求成功',
+        data: null,
+      };
+    } catch (error) {
+      ctx.body = {
+        code: error.message === '参数错误' ? 400 : 500,
+        msg: error.message === '参数错误' ? '参数错误：缺少必要字段' : '系统错误',
+        data: null,
+      };
+    }
+  }
+
   async detail() {
     const { ctx, app } = this;
     const { id = '' } = ctx.query;

@@ -108,6 +108,18 @@ class BillService extends Service {
     }
   }
 
+  async batchAdd(params) {
+    const { app } = this;
+    try {
+      await app.mysql.query('SET NAMES utf8mb4');
+      const result = await app.mysql.insert('bill', params);
+      return result;
+    } catch (error) {
+      console.log('Service - Bill - batchAdd - Error:', error.message);
+      return null;
+    }
+  }
+
   async detail(id, user_id) {
     const { app } = this;
     try {
