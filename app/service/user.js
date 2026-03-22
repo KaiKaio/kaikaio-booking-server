@@ -11,7 +11,7 @@ class UserService extends Service {
       const result = await app.mysql.insert('user', params);
       return result;
     } catch (error) {
-      console.log(error);
+      console.log('Service - User - register - Error:', error.message);
       return null;
     }
   }
@@ -23,7 +23,7 @@ class UserService extends Service {
       const result = await app.mysql.get('user', { username });
       return result;
     } catch (error) {
-      console.log(error);
+      console.log('Service - User - getUserByName - Error:', error.message);
       return null;
     }
   }
@@ -35,7 +35,7 @@ class UserService extends Service {
       const result = await app.mysql.get('user', { user_id });
       return result;
     } catch (error) {
-      console.log(error);
+      console.log('Service - User - getUserById - Error:', error.message);
       return null;
     }
   }
@@ -50,7 +50,7 @@ class UserService extends Service {
       });
       return result;
     } catch (error) {
-      console.log(error);
+      console.log('Service - User - editUserInfo - Error:', error.message);
       return null;
     }
   }
@@ -65,7 +65,7 @@ class UserService extends Service {
       });
       return result;
     } catch (error) {
-      console.log(error);
+      console.log('Service - User - modifyPass - Error:', error.message);
       return null;
     }
   }

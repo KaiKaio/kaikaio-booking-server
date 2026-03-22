@@ -11,6 +11,15 @@ class UploadController extends Controller {
   async upload() {
     const { ctx } = this;
 
+    if (!ctx.request.files || ctx.request.files.length === 0) {
+      ctx.body = {
+        code: 400,
+        msg: '请上传文件',
+        data: null,
+      };
+      return;
+    }
+
     const file = ctx.request.files[0];
 
     let uploadDir = '';

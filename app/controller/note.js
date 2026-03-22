@@ -30,6 +30,7 @@ class NoteController extends Controller {
         msg: '参数错误',
         data: null,
       };
+      return;
     }
 
     try {
@@ -37,12 +38,13 @@ class NoteController extends Controller {
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
       if (!decode) return;
       const user_id = decode.userid;
-      await ctx.service.note.add({
+      const result = await ctx.service.note.add({
         content: note,
         create_time: new Date().getTime(),
         update_time: new Date().getTime(),
         user_id,
       });
+      if (!result) throw new Error();
       ctx.body = {
         code: 200,
         msg: '请求成功',
@@ -67,6 +69,7 @@ class NoteController extends Controller {
         msg: '参数错误',
         data: null,
       };
+      return;
     }
 
     try {
@@ -74,7 +77,8 @@ class NoteController extends Controller {
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
       if (!decode) return;
       const user_id = decode.userid;
-      await ctx.service.note.delete(id, user_id);
+      const result = await ctx.service.note.delete(id, user_id);
+      if (!result) throw new Error();
       ctx.body = {
         code: 200,
         msg: '请求成功',
@@ -99,6 +103,7 @@ class NoteController extends Controller {
         msg: '参数错误',
         data: null,
       };
+      return;
     }
 
     try {
@@ -106,12 +111,13 @@ class NoteController extends Controller {
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
       if (!decode) return;
       const user_id = decode.userid;
-      await ctx.service.note.update({
+      const result = await ctx.service.note.update({
         id,
         content: note,
         update_time: new Date().getTime(),
         user_id,
       });
+      if (!result) throw new Error();
       ctx.body = {
         code: 200,
         msg: '请求成功',

@@ -84,7 +84,7 @@ class UserController extends Controller {
         username: userInfo.username,
       },
       app.config.jwt.secret,
-      { expiresIn: app.config.jwt.expiresIn }
+      { expiresIn: app.config.jwt.sign.expiresIn }
     );
 
     ctx.body = {
