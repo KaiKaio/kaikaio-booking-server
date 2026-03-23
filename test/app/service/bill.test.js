@@ -34,8 +34,6 @@ describe('test/app/service/bill.test.js', () => {
         const mockTotal = [{ 'COUNT(*)': 10 }];
         // 模拟数据库返回的总支出
         const mockExpenseTotal = [{ 'SUM(amount)': 500.00 }];
-        // 模拟数据库返回的总收入
-        const mockIncomeTotal = [{ 'SUM(amount)': 1000.00 }];
 
         // 模拟 app.mysql.query 方法
         // 优化：根据 SQL 语句特征返回对应的 Mock 数据，避免依赖调用顺序
@@ -44,10 +42,11 @@ describe('test/app/service/bill.test.js', () => {
             if (!sql) return [];
             // SQL 包含 COUNT(*) -> 返回总数
             if (sql.includes('COUNT(*)')) return mockTotal;
-            // SQL 包含 SUM(amount) 且 pay_type = 1 -> 返回总支出
-            if (sql.includes('SUM(amount)') && sql.includes('pay_type = 1')) return mockExpenseTotal;
-            // SQL 包含 SUM(amount) 且 pay_type = 2 -> 返回总收入
-            if (sql.includes('SUM(amount)') && sql.includes('pay_type = 2')) return mockIncomeTotal;
+            // SQL 包含 SUM(amount) 且 pay_type = ? -> 返回支出或收入总数
+            // 注意：参数值（1 或 2）在 params 数组中，不在 SQL 字符串中
+            if (sql.includes('SUM(amount)') && sql.includes('pay_type = ?')) {
+              return mockExpenseTotal; // 两个 SUM 查询用同样的结构，params 会区分支出和收入
+            }
             // 默认返回账单列表
             return mockResult;
           },
@@ -76,14 +75,12 @@ describe('test/app/service/bill.test.js', () => {
         const mockResult = [];
         const mockTotal = [{ 'COUNT(*)': 50 }];
         const mockExpenseTotal = [{ 'SUM(amount)': 0 }];
-        const mockIncomeTotal = [{ 'SUM(amount)': 0 }];
 
         mock(app, 'mysql', {
           query: async sql => {
             if (!sql) return [];
             if (sql.includes('COUNT(*)')) return mockTotal;
-            if (sql.includes('SUM(amount)') && sql.includes('pay_type = 1')) return mockExpenseTotal;
-            if (sql.includes('SUM(amount)') && sql.includes('pay_type = 2')) return mockIncomeTotal;
+            if (sql.includes('SUM(amount)') && sql.includes('pay_type = ?')) return mockExpenseTotal;
             return mockResult;
           },
         });
@@ -105,14 +102,12 @@ describe('test/app/service/bill.test.js', () => {
         const mockResult = [];
         const mockTotal = [{ 'COUNT(*)': 5 }];
         const mockExpenseTotal = [{ 'SUM(amount)': 100.00 }];
-        const mockIncomeTotal = [{ 'SUM(amount)': 0 }];
 
         mock(app, 'mysql', {
           query: async sql => {
             if (!sql) return [];
             if (sql.includes('COUNT(*)')) return mockTotal;
-            if (sql.includes('SUM(amount)') && sql.includes('pay_type = 1')) return mockExpenseTotal;
-            if (sql.includes('SUM(amount)') && sql.includes('pay_type = 2')) return mockIncomeTotal;
+            if (sql.includes('SUM(amount)') && sql.includes('pay_type = ?')) return mockExpenseTotal;
             return mockResult;
           },
         });

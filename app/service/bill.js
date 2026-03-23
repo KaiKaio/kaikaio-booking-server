@@ -45,11 +45,11 @@ class BillService extends Service {
     }
 
     // 构建总数查询 SQL
+    const baseParams = isAll ? params : params.slice(0, -2);
     const totalSql = `
       SELECT COUNT(*) FROM bill
       WHERE ${whereConditions.join(' AND ')}
     `;
-    const baseParams = isAll ? params : params.slice(0, -2);
     const totalParams = baseParams;
 
     // 构建支出总额查询 SQL
@@ -67,6 +67,11 @@ class BillService extends Service {
     `;
 
     try {
+      // 调试信息
+      console.log('[DEBUG] totalParams:', totalParams);
+      console.log('[DEBUG] expenseParams:', expenseParams);
+      console.log('[DEBUG] incomeParams:', incomeParams);
+
       const result = await app.mysql.query(sql, params);
       const total = await app.mysql.query(totalSql, totalParams);
       const expenseTotal = await app.mysql.query(expenseSql, expenseParams);
