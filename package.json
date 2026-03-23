@@ -1,5 +1,5 @@
 {
-  "name": "jue-diary-server",
+  "name": "kaikaio-booking-server",
   "version": "1.0.0",
   "description": "Kaikaio-Booking 服务端项目",
   "private": true,
@@ -7,13 +7,13 @@
     "declarations": true
   },
   "dependencies": {
-    "csvtojson": "^2.0.10",
+    "csvtojson": "^2.0.14",
     "dayjs": "^1.11.19",
-    "egg": "^2.15.1",
-    "egg-cors": "^2.2.3",
+    "egg": "^3.34.0",
+    "egg-cors": "^3.0.1",
     "egg-jwt": "^3.1.7",
-    "egg-mysql": "^3.0.0",
-    "egg-scripts": "^2.11.0",
+    "egg-mysql": "^5.0.0",
+    "egg-scripts": "^3.1.0",
     "mkdirp": "^1.0.4",
     "node-csv": "^0.1.2"
   },
@@ -21,18 +21,18 @@
     "autod": "^3.0.1",
     "autod-egg": "^1.1.0",
     "cross-env": "^10.1.0",
-    "egg-bin": "^4.11.0",
-    "egg-ci": "^1.11.0",
-    "egg-mock": "^3.21.0",
-    "eslint": "^7.32.0",
-    "eslint-config-egg": "^8.1.2"
+    "egg-bin": "^6.13.0",
+    "egg-ci": "^2.2.0",
+    "egg-mock": "^5.15.2",
+    "eslint": "^8.57.0",
+    "eslint-config-egg": "^14.1.0"
   },
   "engines": {
     "node": ">=16.0.0"
   },
   "scripts": {
-    "start": "egg-scripts start --daemon --title=egg-server-jue-diary-server",
-    "stop": "egg-scripts stop --title=egg-server-jue-diary-server",
+    "start": "egg-scripts start --daemon --title=egg-server-kaikaio-booking-server",
+    "stop": "egg-scripts stop --title=egg-server-kaikaio-booking-server",
     "dev": "egg-bin dev",
     "debug": "egg-bin debug",
     "test": "npm run lint -- --fix && npm run test-local",

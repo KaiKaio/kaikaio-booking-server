@@ -1,9 +1,9 @@
 'use strict';
 
-const fs = require('fs');
+const fs = require('node:fs');
 const dayjs = require('dayjs');
 const mkdirp = require('mkdirp');
-const path = require('path');
+const path = require('node:path');
 
 const Controller = require('egg').Controller;
 

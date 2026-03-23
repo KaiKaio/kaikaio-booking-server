@@ -16,10 +16,10 @@ describe('test/app/controller/bill.test.js', () => {
       it('should return bill list successfully', async () => {
         const token = createToken(1);
         mock(app, 'mysql', {
-          query: async sql => {
+          query: async (sql, params) => {
             if (sql.includes('SELECT COUNT(*)')) return [{ 'COUNT(*)': 2 }];
-            if (sql.includes('SUM(amount)') && sql.includes('pay_type = 1')) return [{ 'SUM(amount)': 100 }];
-            if (sql.includes('SUM(amount)') && sql.includes('pay_type = 2')) return [{ 'SUM(amount)': 50 }];
+            if (sql.includes('SUM(amount)') && params[params.length - 1] === 1) return [{ 'SUM(amount)': 100 }];
+            if (sql.includes('SUM(amount)') && params[params.length - 1] === 2) return [{ 'SUM(amount)': 50 }];
             return [
               { id: 1, pay_type: '1', amount: 50, date: '2026-03-01', type_id: '1', type_name: '餐饮', remark: '午餐' },
               { id: 2, pay_type: '2', amount: 50, date: '2026-03-01', type_id: '2', type_name: '工资', remark: '月薪' },
@@ -32,9 +32,9 @@ describe('test/app/controller/bill.test.js', () => {
           .query({ start: '2026-01-01', end: '2026-12-31', page: 1, page_size: 10 });
         assert(res.status === 200);
         assert(res.body.code === 200);
-        assert(res.body.data.totalPage === 1);
-        assert(res.body.data.totalExpense === 100);
-        assert(res.body.data.totalIncome === 50);
+        assert.strictEqual(res.body.data.totalPage, 1);
+        assert.strictEqual(res.body.data.totalExpense, 100);
+        assert.strictEqual(res.body.data.totalIncome, 50);
       });
 
       it('should return 401 when token is invalid', async () => {
@@ -186,9 +186,9 @@ describe('test/app/controller/bill.test.js', () => {
       it('should return bill data successfully', async () => {
         const token = createToken(1);
         mock(app, 'mysql', {
-          query: async sql => {
-            if (sql.includes('SUM(amount)') && sql.includes('pay_type = 1')) return [{ 'SUM(amount)': 1000 }];
-            if (sql.includes('SUM(amount)') && sql.includes('pay_type = 2')) return [{ 'SUM(amount)': 5000 }];
+          query: async (sql, params) => {
+            if (sql.includes('SUM(amount)') && params[params.length - 1] === 1) return [{ 'SUM(amount)': 1000 }];
+            if (sql.includes('SUM(amount)') && params[params.length - 1] === 2) return [{ 'SUM(amount)': 5000 }];
             return [
               { id: 1, pay_type: '1', amount: 500, type_id: '1', type_name: '餐饮' },
               { id: 2, pay_type: '1', amount: 500, type_id: '1', type_name: '餐饮' },
@@ -201,8 +201,8 @@ describe('test/app/controller/bill.test.js', () => {
           .query({ start: '2026-01-01', end: '2026-12-31' });
         assert(res.status === 200);
         assert(res.body.code === 200);
-        assert(res.body.data.total_expense === '1000.00');
-        assert(res.body.data.total_income === '5000.00');
+        assert.strictEqual(res.body.data.total_expense, '1000.00');
+        assert.strictEqual(res.body.data.total_income, '5000.00');
       });
     });
 

@@ -49,17 +49,18 @@ class BillService extends Service {
       SELECT COUNT(*) FROM bill
       WHERE ${whereConditions.join(' AND ')}
     `;
-    const totalParams = params.slice(0, -isAll ? 2 : 0);
+    const baseParams = isAll ? params : params.slice(0, -2);
+    const totalParams = baseParams;
 
     // 构建支出总额查询 SQL
-    const expenseParams = [ ...params.slice(0, -isAll ? 2 : 0), 1 ];
+    const expenseParams = [ ...baseParams, 1 ];
     const expenseSql = `
       SELECT SUM(amount) FROM bill
       WHERE ${whereConditions.join(' AND ')} AND pay_type = ?
     `;
 
     // 构建收入总额查询 SQL
-    const incomeParams = [ ...params.slice(0, -isAll ? 2 : 0), 2 ];
+    const incomeParams = [ ...baseParams, 2 ];
     const inComeSql = `
       SELECT SUM(amount) FROM bill
       WHERE ${whereConditions.join(' AND ')} AND pay_type = ?
