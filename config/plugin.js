@@ -11,7 +11,7 @@ module.exports = {
     package: 'egg-cors',
   },
   mysql: {
-    enable: true,
+    enable: false,
     package: 'egg-mysql',
   },
 };

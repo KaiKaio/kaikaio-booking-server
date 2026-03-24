@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "lib": ["ES2020"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "./app",
+    "rootDir": "./src",
+    "ignoreDeprecations": "5.0"
+  },
+  "include": [
+    "src/**/*",
+    "config/**/*",
+    "test/**/*",
+    // "typings/**/*"
+    "typings/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "app",
+    "logs",
+    "run",
+    "coverage"
+  ],
+  "ts-node": {
+    "transpileOnly": true,
+    "files": true
+  }
+}
