@@ -1,8 +1,6 @@
-'use strict';
+import { app, assert } from 'egg-mock/bootstrap';
 
-const { app, assert } = require('egg-mock/bootstrap');
-
-describe('test/app/controller/upload.test.js', () => {
+describe('test/app/controller/upload.test.ts', () => {
   describe('UploadController', () => {
     describe('upload()', () => {
       it('should return 400 when no file uploaded', async () => {

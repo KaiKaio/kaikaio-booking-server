@@ -1,10 +1,8 @@
-'use strict';
+import { app, mock, assert } from 'egg-mock/bootstrap';
 
-const { app, mock, assert } = require('egg-mock/bootstrap');
-
-describe('test/app/service/type.test.js', () => {
+describe('test/app/service/type.test.ts', () => {
   describe('TypeService', () => {
-    let ctx;
+    let ctx: any;
 
     // 在所有测试运行前初始化 mock 上下文
     before(() => {
@@ -25,7 +23,7 @@ describe('test/app/service/type.test.js', () => {
 
         // 模拟 app.mysql.query 方法
         mock(app, 'mysql', {
-          query: async sql => {
+          query: async (sql: string) => {
             if (!sql) return [];
             return mockResult;
           },

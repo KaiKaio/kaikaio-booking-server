@@ -40,8 +40,8 @@ export default class BillService extends Service {
     const { app } = this;
 
     // 验证 orderBy（白名单）
-    const validOrderBy = ['ASC', 'DESC'];
-    let safeOrderBy = validOrderBy.includes(orderBy) ? orderBy : 'DESC';
+    const validOrderBy = [ 'ASC', 'DESC' ];
+    const safeOrderBy = validOrderBy.includes(orderBy) ? orderBy : 'DESC';
 
     // 验证数字参数
     const safePageNum = parseInt(String(pageNum)) || 1;
@@ -49,8 +49,8 @@ export default class BillService extends Service {
     const safeTypeId = parseInt(String(type_id)) || 0;
 
     // 构建 WHERE 条件
-    const whereConditions = ['user_id = ?'];
-    const params: (string | number)[] = [id];
+    const whereConditions = [ 'user_id = ?' ];
+    const params: (string | number)[] = [ id ];
 
     if (safeTypeId) {
       whereConditions.push('type_id = ?');
@@ -82,14 +82,14 @@ export default class BillService extends Service {
     const totalParams = baseParams;
 
     // 构建支出总额查询 SQL
-    const expenseParams = [...baseParams, 1];
+    const expenseParams = [ ...baseParams, 1 ];
     const expenseSql = `
       SELECT SUM(amount) FROM bill
       WHERE ${whereConditions.join(' AND ')} AND pay_type = ?
     `;
 
     // 构建收入总额查询 SQL
-    const incomeParams = [...baseParams, 2];
+    const incomeParams = [ ...baseParams, 2 ];
     const inComeSql = `
       SELECT SUM(amount) FROM bill
       WHERE ${whereConditions.join(' AND ')} AND pay_type = ?
@@ -122,7 +122,7 @@ export default class BillService extends Service {
     const { app } = this;
     try {
       let sql = 'SELECT MIN(date) as EarliestDate FROM bill WHERE user_id = ?';
-      const params: (string | number)[] = [user_id];
+      const params: (string | number)[] = [ user_id ];
 
       if (type_id) {
         sql += ' AND type_id = ?';
@@ -225,7 +225,7 @@ export default class BillService extends Service {
         GROUP BY month
         ORDER BY month
       `;
-      const result = await app.mysql.query(sql, [user_id, startMonth, endMonth]);
+      const result = await app.mysql.query(sql, [ user_id, startMonth, endMonth ]);
       return result;
     } catch (error: any) {
       this.logger.error('Service - Bill - queyBillByMonthly - Error:', error.message);

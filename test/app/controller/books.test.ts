@@ -1,8 +1,6 @@
-'use strict';
+import { app, mock, assert } from 'egg-mock/bootstrap';
 
-const { app, mock, assert } = require('egg-mock/bootstrap');
-
-describe('test/app/controller/books.test.js', () => {
+describe('test/app/controller/books.test.ts', () => {
   describe('BooksController', () => {
     // 测试 add - 添加书籍
     describe('add()', () => {

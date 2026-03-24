@@ -1,8 +1,6 @@
-'use strict';
+import { app, mock, assert } from 'egg-mock/bootstrap';
 
-const { app, mock, assert } = require('egg-mock/bootstrap');
-
-describe('test/app/controller/type.test.js', () => {
+describe('test/app/controller/type.test.ts', () => {
   describe('TypeController', () => {
     // 测试 list - 获取类型列表
     describe('list()', () => {

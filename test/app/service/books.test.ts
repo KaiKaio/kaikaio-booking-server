@@ -1,10 +1,8 @@
-'use strict';
+import { app, mock, assert } from 'egg-mock/bootstrap';
 
-const { app, mock, assert } = require('egg-mock/bootstrap');
-
-describe('test/app/service/books.test.js', () => {
+describe('test/app/service/books.test.ts', () => {
   describe('BooksService', () => {
-    let ctx;
+    let ctx: any;
 
     before(() => {
       ctx = app.mockContext();
@@ -34,7 +32,7 @@ describe('test/app/service/books.test.js', () => {
       });
 
       it('should return empty array when no books', async () => {
-        const mockResult = [];
+        const mockResult: any[] = [];
 
         mock(app, 'mysql', {
           query: async () => mockResult,

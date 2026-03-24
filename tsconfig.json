@@ -12,21 +12,21 @@
     "declarationMap": true,
     "outDir": "./app",
     "rootDir": "./src",
-    "ignoreDeprecations": "5.0"
+    "ignoreDeprecations": "5.0",
+    "types": ["node", "mocha", "power-assert"]
   },
   "include": [
     "src/**/*",
-    "config/**/*",
-    "test/**/*",
-    // "typings/**/*"
-    "typings/*"
+    "typings/**/*.ts",
+    "typings/**/*.d.ts"
   ],
   "exclude": [
     "node_modules",
     "app",
     "logs",
     "run",
-    "coverage"
+    "coverage",
+    "test"
   ],
   "ts-node": {
     "transpileOnly": true,

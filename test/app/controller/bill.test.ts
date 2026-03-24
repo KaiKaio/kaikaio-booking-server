@@ -1,8 +1,6 @@
-'use strict';
+import { app, mock, assert } from 'egg-mock/bootstrap';
 
-const { app, mock, assert } = require('egg-mock/bootstrap');
-
-describe('test/app/controller/bill.test.js', () => {
+describe('test/app/controller/bill.test.ts', () => {
   describe('BillController', () => {
     const createToken = (userid = 1) => {
       return app.jwt.sign(
@@ -16,7 +14,7 @@ describe('test/app/controller/bill.test.js', () => {
       it('should return bill list successfully', async () => {
         const token = createToken(1);
         mock(app, 'mysql', {
-          query: async (sql, params) => {
+          query: async (sql: string, params: any[]) => {
             if (sql.includes('SELECT COUNT(*)')) return [{ 'COUNT(*)': 2 }];
             if (sql.includes('SUM(amount)') && params[params.length - 1] === 1) return [{ 'SUM(amount)': 100 }];
             if (sql.includes('SUM(amount)') && params[params.length - 1] === 2) return [{ 'SUM(amount)': 50 }];
@@ -186,7 +184,7 @@ describe('test/app/controller/bill.test.js', () => {
       it('should return bill data successfully', async () => {
         const token = createToken(1);
         mock(app, 'mysql', {
-          query: async (sql, params) => {
+          query: async (sql: string, params: any[]) => {
             if (sql.includes('SUM(amount)') && params[params.length - 1] === 1) return [{ 'SUM(amount)': 1000 }];
             if (sql.includes('SUM(amount)') && params[params.length - 1] === 2) return [{ 'SUM(amount)': 5000 }];
             return [

@@ -1,11 +1,10 @@
-'use strict';
+import { app, mock, assert } from 'egg-mock/bootstrap';
+import jwtErr from '../../../src/middleware/jwtErr';
 
-const { app, mock, assert } = require('egg-mock/bootstrap');
-
-describe('test/app/middleware/jwtErr.test.js', () => {
+describe('test/app/middleware/jwtErr.test.ts', () => {
   describe('jwtErr Middleware', () => {
-    let ctx;
-    let nextCalled;
+    let ctx: any;
+    let nextCalled: boolean;
 
     beforeEach(() => {
       ctx = app.mockContext();
@@ -13,7 +12,6 @@ describe('test/app/middleware/jwtErr.test.js', () => {
     });
 
     it('should call next() when token is valid', async () => {
-      const middleware = require('../../../app/middleware/jwtErr');
       const secret = 'test-secret';
 
       // Mock jwt.verify to succeed
@@ -29,7 +27,7 @@ describe('test/app/middleware/jwtErr.test.js', () => {
         authorization: 'valid-token',
       };
 
-      const handler = middleware({ secret });
+      const handler = jwtErr({ secret });
       await handler(ctx, next);
 
       assert(nextCalled === true);
@@ -37,7 +35,6 @@ describe('test/app/middleware/jwtErr.test.js', () => {
     });
 
     it('should return 401 when token is invalid/expired', async () => {
-      const middleware = require('../../../app/middleware/jwtErr');
       const secret = 'test-secret';
 
       // Mock jwt.verify to throw error
@@ -55,7 +52,7 @@ describe('test/app/middleware/jwtErr.test.js', () => {
         authorization: 'expired-token',
       };
 
-      const handler = middleware({ secret });
+      const handler = jwtErr({ secret });
       await handler(ctx, next);
 
       assert(nextCalled === false);
@@ -65,7 +62,6 @@ describe('test/app/middleware/jwtErr.test.js', () => {
     });
 
     it('should return 401 when token is null string', async () => {
-      const middleware = require('../../../app/middleware/jwtErr');
       const secret = 'test-secret';
 
       const next = async () => {
@@ -76,7 +72,7 @@ describe('test/app/middleware/jwtErr.test.js', () => {
         authorization: 'null',
       };
 
-      const handler = middleware({ secret });
+      const handler = jwtErr({ secret });
       await handler(ctx, next);
 
       assert(nextCalled === false);
@@ -85,7 +81,6 @@ describe('test/app/middleware/jwtErr.test.js', () => {
     });
 
     it('should return 401 when no token provided', async () => {
-      const middleware = require('../../../app/middleware/jwtErr');
       const secret = 'test-secret';
 
       const next = async () => {
@@ -94,7 +89,7 @@ describe('test/app/middleware/jwtErr.test.js', () => {
 
       ctx.request.header = {};
 
-      const handler = middleware({ secret });
+      const handler = jwtErr({ secret });
       await handler(ctx, next);
 
       assert(nextCalled === false);

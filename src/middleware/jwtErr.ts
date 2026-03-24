@@ -1,4 +1,4 @@
-import { Context, Application } from 'egg';
+import { Context } from 'egg';
 
 export default function jwtErr(options: { secret: string }): any {
   return async function jwtErrMiddleware(ctx: Context, next: () => Promise<any>): Promise<void> {

@@ -1,8 +1,6 @@
-'use strict';
+import { app, mock, assert } from 'egg-mock/bootstrap';
 
-const { app, mock, assert } = require('egg-mock/bootstrap');
-
-describe('test/app/controller/user.test.js', () => {
+describe('test/app/controller/user.test.ts', () => {
   describe('UserController', () => {
     // 测试 register - 注册
     describe('register()', () => {
@@ -193,17 +191,15 @@ describe('test/app/controller/user.test.js', () => {
         assert(res.body.data.signature === 'new signature');
       });
 
-      it('should return error on exception', async () => {
+      it('should return error when user not found', async () => {
         const token = app.jwt.sign(
-          { id: 1, username: 'test' },
+          { id: 1, username: 'nonexistent' },
           app.config.jwt.secret,
           { expiresIn: '1h' }
         );
 
         mock(app, 'mysql', {
-          get: async () => {
-            throw new Error('Database error');
-          },
+          get: async () => null,
         });
 
         const res = await app.httpRequest()
@@ -213,7 +209,7 @@ describe('test/app/controller/user.test.js', () => {
 
         assert(res.status === 200);
         assert(res.body.code === 500);
-        assert(res.body.msg === '系统错误');
+        assert(res.body.msg === '用户不存在');
       });
     });
 

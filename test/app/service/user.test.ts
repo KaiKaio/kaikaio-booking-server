@@ -1,10 +1,8 @@
-'use strict';
+import { app, mock, assert } from 'egg-mock/bootstrap';
 
-const { app, mock, assert } = require('egg-mock/bootstrap');
-
-describe('test/app/service/user.test.js', () => {
+describe('test/app/service/user.test.ts', () => {
   describe('UserService', () => {
-    let ctx;
+    let ctx: any;
 
     // 在所有测试运行前初始化 mock 上下文
     before(() => {
@@ -71,7 +69,7 @@ describe('test/app/service/user.test.js', () => {
 
         // 模拟数据库查询
         mock(app, 'mysql', {
-          get: async (table, conditions) => {
+          get: async (table: string, conditions: any) => {
             if (table === 'user' && conditions.username === 'testuser') {
               return mockUser;
             }
@@ -112,7 +110,7 @@ describe('test/app/service/user.test.js', () => {
         };
 
         mock(app, 'mysql', {
-          get: async (table, conditions) => {
+          get: async (table: string, conditions: any) => {
             if (table === 'user' && conditions.user_id === 1) {
               return mockUser;
             }

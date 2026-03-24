@@ -5,10 +5,10 @@ export default class BooksService extends Service {
   async list({ userId }: { userId: number }): Promise<Book[] | null> {
     const { app } = this;
 
-    const sql = 'SELECT' + ' id, name' + ' FROM books' + ' WHERE user_id = ?';
+    const sql = 'SELECT id, name FROM books WHERE user_id = ?';
 
     try {
-      const result = await app.mysql.query(sql, [userId]);
+      const result = await app.mysql.query(sql, [ userId ]);
       return result as Book[];
     } catch (error: any) {
       this.logger.error(error, 'Service - Books - Error');

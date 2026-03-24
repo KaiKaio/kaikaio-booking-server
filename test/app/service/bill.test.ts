@@ -1,10 +1,8 @@
-'use strict';
+import { app, mock, assert } from 'egg-mock/bootstrap';
 
-const { app, mock, assert } = require('egg-mock/bootstrap');
-
-describe('test/app/service/bill.test.js', () => {
+describe('test/app/service/bill.test.ts', () => {
   describe('BillService', () => {
-    let ctx;
+    let ctx: any;
 
     // 在所有测试运行前初始化 mock 上下文
     before(() => {
@@ -38,7 +36,7 @@ describe('test/app/service/bill.test.js', () => {
         // 模拟 app.mysql.query 方法
         // 优化：根据 SQL 语句特征返回对应的 Mock 数据，避免依赖调用顺序
         mock(app, 'mysql', {
-          query: async sql => {
+          query: async (sql: string) => {
             if (!sql) return [];
             // SQL 包含 COUNT(*) -> 返回总数
             if (sql.includes('COUNT(*)')) return mockTotal;
@@ -72,12 +70,12 @@ describe('test/app/service/bill.test.js', () => {
       });
 
       it('should handle pagination', async () => {
-        const mockResult = [];
+        const mockResult: any[] = [];
         const mockTotal = [{ 'COUNT(*)': 50 }];
         const mockExpenseTotal = [{ 'SUM(amount)': 0 }];
 
         mock(app, 'mysql', {
-          query: async sql => {
+          query: async (sql: string) => {
             if (!sql) return [];
             if (sql.includes('COUNT(*)')) return mockTotal;
             if (sql.includes('SUM(amount)') && sql.includes('pay_type = ?')) return mockExpenseTotal;
@@ -99,12 +97,12 @@ describe('test/app/service/bill.test.js', () => {
       });
 
       it('should filter by type_id', async () => {
-        const mockResult = [];
+        const mockResult: any[] = [];
         const mockTotal = [{ 'COUNT(*)': 5 }];
         const mockExpenseTotal = [{ 'SUM(amount)': 100.00 }];
 
         mock(app, 'mysql', {
-          query: async sql => {
+          query: async (sql: string) => {
             if (!sql) return [];
             if (sql.includes('COUNT(*)')) return mockTotal;
             if (sql.includes('SUM(amount)') && sql.includes('pay_type = ?')) return mockExpenseTotal;
