@@ -4,8 +4,8 @@ describe('test/app/service/bill.test.ts', () => {
   describe('BillService', () => {
     let ctx: any;
 
-    // 在所有测试运行前初始化 mock 上下文
-    before(() => {
+    // 在每个测试运行前初始化 mock 上下文
+    beforeEach(() => {
       // 创建模拟的请求上下文
       ctx = app.mockContext();
     });

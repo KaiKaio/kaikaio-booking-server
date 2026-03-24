@@ -4,7 +4,8 @@
   "description": "Kaikaio-Booking 服务端项目",
   "private": true,
   "egg": {
-    "declarations": true
+    "declarations": true,
+    "typescript": true
   },
   "dependencies": {
     "csvtojson": "^2.0.14",

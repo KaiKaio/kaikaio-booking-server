@@ -3,12 +3,12 @@
 /* eslint-disable */
 
 import 'egg';
-import ExportBill from '../../../app/controller/bill';
-import ExportBooks from '../../../app/controller/books';
-import ExportNote from '../../../app/controller/note';
-import ExportType from '../../../app/controller/type';
-import ExportUpload from '../../../app/controller/upload';
-import ExportUser from '../../../app/controller/user';
+import ExportBill = require('../../../app/controller/bill');
+import ExportBooks = require('../../../app/controller/books');
+import ExportNote = require('../../../app/controller/note');
+import ExportType = require('../../../app/controller/type');
+import ExportUpload = require('../../../app/controller/upload');
+import ExportUser = require('../../../app/controller/user');
 
 declare module 'egg' {
   interface IController {
