@@ -1,8 +1,11 @@
 FROM node:18-alpine
 WORKDIR /app
 COPY package.json package-lock.json* npm-shrinkwrap.json* ./
-RUN npm ci --omit=dev --no-audit --no-fund || npm install --omit=dev --no-audit --no-fund; npm cache clean --force
+RUN npm ci --no-audit --no-fund || npm install --no-audit --no-fund; npm cache clean --force
 COPY . .
+RUN npm run build && \
+    npm prune --omit=dev && \
+    npm cache clean --force
 RUN apk add --no-cache tzdata && \
     cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
     echo "Asia/Shanghai" > /etc/timezone
