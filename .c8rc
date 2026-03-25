@@ -1,0 +1,7 @@
+{
+  "exclude": [
+    "src/types/**",
+    "**/*.d.ts"
+  ],
+  "reporter": ["text", "json", "lcov"]
+}
