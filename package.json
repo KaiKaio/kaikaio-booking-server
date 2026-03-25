@@ -38,7 +38,8 @@
     "eslint-config-egg": "^14.1.0",
     "nyc": "^18.0.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "concurrently": "^8.2.2"
   },
   "engines": {
     "node": ">=16.0.0"
@@ -46,7 +47,7 @@
   "scripts": {
     "start": "egg-scripts start --daemon --title=egg-server-kaikaio-booking-server",
     "stop": "egg-scripts stop --title=egg-server-kaikaio-booking-server",
-    "dev": "egg-bin dev -r ts-node/register",
+    "dev": "concurrently \"npm run tsc -- --watch\" \"egg-bin dev\"",
     "debug": "egg-bin debug -r ts-node/register",
     "test": "npm run lint -- --fix && npm run test-local",
     "test-local": "cross-env EGG_SERVER_ENV=unittest egg-bin test --ts",
