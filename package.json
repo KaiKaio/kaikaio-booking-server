@@ -50,7 +50,7 @@
     "debug": "egg-bin debug -r ts-node/register",
     "test": "npm run lint -- --fix && npm run test-local",
     "test-local": "cross-env EGG_SERVER_ENV=unittest egg-bin test --ts",
-    "cov": "cross-env EGG_SERVER_ENV=unittest c8 --all --include \"src/**/*.ts\" --exclude \"src/types/**\" --extension .ts --exclude-after-remap -r text-summary -r json-summary -r lcov egg-bin test --ts",
+    "cov": "cross-env EGG_SERVER_ENV=unittest c8 egg-bin test --ts",
     "lint": "eslint . --ext .ts,.js",
     "ci": "npm run lint && npm run cov",
     "autod": "autod",
