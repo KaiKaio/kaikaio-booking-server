@@ -1,0 +1,12 @@
+{
+  "all": true,
+  "include": ["src/**/*.ts"],
+  "exclude": [
+    "src/router.ts",
+    "src/types/**",
+    "**/*.d.ts"
+  ],
+  "extension": [".ts"],
+  "exclude-after-remap": true,
+  "reporter": ["text-summary", "json-summary", "lcov"]
+}

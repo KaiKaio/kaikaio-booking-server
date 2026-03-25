@@ -10,9 +10,19 @@ run/
 .DS_Store
 *.sw*
 *.un~
-typings/
 .nyc_output/
 config/ssl_key/
 # Ignore uploaded files but keep the directory
 app/public/upload/*
 !app/public/upload/.gitkeep
+
+# qoder Editor
+.qoder
+
+# TypeScript
+*.tsbuildinfo
+app/**/*.js
+app/**/*.d.ts
+app/**/*.d.ts.map
+app/**/*.js.map
+!app/public/

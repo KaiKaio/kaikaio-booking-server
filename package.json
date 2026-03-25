@@ -4,7 +4,8 @@
   "description": "Kaikaio-Booking 服务端项目",
   "private": true,
   "egg": {
-    "declarations": true
+    "declarations": true,
+    "typescript": true
   },
   "dependencies": {
     "csvtojson": "^2.0.14",
@@ -18,14 +19,26 @@
     "node-csv": "^0.1.2"
   },
   "devDependencies": {
+    "@eggjs/tsconfig": "^3.1.0-beta.2",
+    "@swc-node/register": "^1.11.1",
+    "@swc/core": "^1.15.21",
+    "@types/mkdirp": "^1.0.2",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^25.5.0",
+    "@types/power-assert": "^1.5.12",
+    "@typescript-eslint/parser": "^8.57.2",
     "autod": "^3.0.1",
     "autod-egg": "^1.1.0",
+    "c8": "^11.0.0",
     "cross-env": "^10.1.0",
     "egg-bin": "^6.13.0",
     "egg-ci": "^2.2.0",
     "egg-mock": "^5.15.2",
     "eslint": "^8.57.0",
-    "eslint-config-egg": "^14.1.0"
+    "eslint-config-egg": "^14.1.0",
+    "nyc": "^18.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   },
   "engines": {
     "node": ">=16.0.0"
@@ -33,14 +46,17 @@
   "scripts": {
     "start": "egg-scripts start --daemon --title=egg-server-kaikaio-booking-server",
     "stop": "egg-scripts stop --title=egg-server-kaikaio-booking-server",
-    "dev": "egg-bin dev",
-    "debug": "egg-bin debug",
+    "dev": "egg-bin dev -r ts-node/register",
+    "debug": "egg-bin debug -r ts-node/register",
     "test": "npm run lint -- --fix && npm run test-local",
-    "test-local": "cross-env EGG_SERVER_ENV=unittest egg-bin test",
-    "cov": "cross-env EGG_SERVER_ENV=unittest egg-bin cov",
-    "lint": "eslint .",
+    "test-local": "cross-env EGG_SERVER_ENV=unittest egg-bin test --ts",
+    "cov": "cross-env EGG_SERVER_ENV=unittest c8 egg-bin test --ts",
+    "lint": "eslint . --ext .ts,.js",
     "ci": "npm run lint && npm run cov",
-    "autod": "autod"
+    "autod": "autod",
+    "tsc": "tsc",
+    "clean": "rm -rf app/*",
+    "build": "npm run clean && npm run tsc"
   },
   "ci": {
     "version": "10"
