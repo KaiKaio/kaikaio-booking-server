@@ -3,7 +3,7 @@
 /* eslint-disable */
 
 import 'egg';
-import ExportJwtErr = require('../../../app/middleware/jwtErr');
+import ExportJwtErr from '../../../src/middleware/jwtErr';
 
 declare module 'egg' {
   interface IMiddleware {
