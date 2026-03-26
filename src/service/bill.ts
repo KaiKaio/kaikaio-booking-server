@@ -19,10 +19,10 @@ interface MonthlyQueryParams {
 }
 
 interface BillListResult {
-  result: any[];
-  total: any[];
-  expenseTotal: any[];
-  incomeTotal: any[];
+  result: Bill[];
+  total: { 'COUNT(*)': number }[];
+  expenseTotal: { 'SUM(amount)': number }[];
+  incomeTotal: { 'SUM(amount)': number }[];
 }
 
 export default class BillService extends Service {
@@ -99,15 +99,10 @@ export default class BillService extends Service {
     `;
 
     try {
-      // 调试信息
-      this.logger.info('[DEBUG] totalParams:', totalParams);
-      this.logger.info('[DEBUG] expenseParams:', expenseParams);
-      this.logger.info('[DEBUG] incomeParams:', incomeParams);
-
-      const result = await app.mysql.query(sql, params);
-      const total = await app.mysql.query(totalSql, totalParams);
-      const expenseTotal = await app.mysql.query(expenseSql, expenseParams);
-      const incomeTotal = await app.mysql.query(inComeSql, incomeParams);
+      const result = await app.mysql.query<Bill[]>(sql, params);
+      const total = await app.mysql.query<{ 'COUNT(*)': number }[]>(totalSql, totalParams);
+      const expenseTotal = await app.mysql.query<{ 'SUM(amount)': number }[]>(expenseSql, expenseParams);
+      const incomeTotal = await app.mysql.query<{ 'SUM(amount)': number }[]>(inComeSql, incomeParams);
       return { result, total, expenseTotal, incomeTotal };
     } catch (error: any) {
       this.logger.error('Service - Bill - list - Error:', error.message);

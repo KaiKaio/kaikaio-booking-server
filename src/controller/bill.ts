@@ -443,8 +443,9 @@ export default class BillController extends Controller {
           return arr;
         }, [] as BillItem[])
         .map((item: BillItem) => {
-          item.amount = Number(Number(item.amount).toFixed(2));
-          return item;
+          const newItem = item as BillItem & { number: number };
+          newItem.number = Number(Number(item.amount).toFixed(2));
+          return newItem;
         });
 
       ctx.body = {
