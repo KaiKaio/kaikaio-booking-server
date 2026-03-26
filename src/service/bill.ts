@@ -57,8 +57,11 @@ export default class BillService extends Service {
       params.push(safeTypeId);
     }
 
+    const startStr = start.length === 10 ? `${start} 00:00:00` : start;
+    const endStr = end.length === 10 ? `${end} 23:59:59` : end;
+
     whereConditions.push('date BETWEEN ? AND ?');
-    params.push(start, end);
+    params.push(startStr, endStr);
 
     // 构建主查询 SQL
     let sql = `
@@ -213,6 +216,9 @@ export default class BillService extends Service {
   }: MonthlyQueryParams): Promise<any[] | null> {
     const { app } = this;
     try {
+      const startStr = startMonth.length === 10 ? `${startMonth} 00:00:00` : startMonth;
+      const endStr = endMonth.length === 10 ? `${endMonth} 23:59:59` : endMonth;
+
       const sql = `
         SELECT
           DATE_FORMAT(date, '%Y-%m') AS month,
@@ -225,7 +231,7 @@ export default class BillService extends Service {
         GROUP BY month
         ORDER BY month
       `;
-      const result = await app.mysql.query(sql, [ user_id, startMonth, endMonth ]);
+      const result = await app.mysql.query(sql, [ user_id, startStr, endStr ]);
       return result;
     } catch (error: any) {
       this.logger.error('Service - Bill - queyBillByMonthly - Error:', error.message);
