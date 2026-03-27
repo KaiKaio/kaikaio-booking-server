@@ -386,5 +386,61 @@ describe('test/app/service/bill.test.ts', () => {
         assert(result === null);
       });
     });
+
+    /**
+     * 测试 batchAdd 方法：批量添加账单
+     */
+    describe('batchAdd()', () => {
+      it('should batch add bills successfully', async () => {
+        const bills = [
+          {
+            user_id: 1,
+            pay_type: '1',
+            amount: '50.00',
+            date: '2026-01-15',
+            type_id: '1',
+            type_name: '餐饮',
+            remark: '午餐',
+          },
+          {
+            user_id: 1,
+            pay_type: '2',
+            amount: '100.00',
+            date: '2026-01-16',
+            type_id: '2',
+            type_name: '工资',
+            remark: '月薪',
+          },
+        ];
+
+        mock(app, 'mysql', {
+          query: async () => undefined, // for SET NAMES utf8mb4
+          insert: async () => ({
+            affectedRows: 2,
+            insertId: 10,
+          }),
+        });
+
+        const result = await ctx.service.bill.batchAdd(bills);
+
+        assert(result);
+        assert(result.affectedRows === 2);
+      });
+
+      it('should handle empty array', async () => {
+        mock(app, 'mysql', {
+          query: async () => undefined,
+          insert: async () => ({
+            affectedRows: 0,
+            insertId: 0,
+          }),
+        });
+
+        const result = await ctx.service.bill.batchAdd([]);
+
+        assert(result);
+        assert(result.affectedRows === 0);
+      });
+    });
   });
 });
