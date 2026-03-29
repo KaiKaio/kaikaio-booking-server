@@ -5,7 +5,7 @@ export interface User {
   password: string;
   signature?: string;
   avatar?: string;
-  user_id?: number;
+  user_id?: string;
 }
 
 // API 响应格式

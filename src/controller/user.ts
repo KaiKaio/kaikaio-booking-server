@@ -5,7 +5,7 @@ const defaultAvatar = 'http://s.yezgea02.com/1615973940679/WeChat77d6d2ac093e24b
 
 export default class UserController extends Controller {
   async register(): Promise<void> {
-    const { ctx } = this;
+    const { ctx, app } = this;
     const { username, password } = ctx.request.body as { username: string; password: string };
 
     if (!username || !password) {
@@ -29,18 +29,55 @@ export default class UserController extends Controller {
       return;
     }
 
+    // 调用本机 4000 端口的远程服务获取 _id
+    let remoteUserId: string | null = null;
+    try {
+      const remoteResponse = await app.curl<{
+        _id: string;
+        msg: string;
+      }>('http://127.0.0.1:4000/api/user/register', {
+        method: 'POST',
+        contentType: 'json',
+        data: { userName: username, password },
+        dataType: 'json',
+        timeout: 10000,
+      });
+
+      const _id = remoteResponse.data._id;
+
+      if (_id) {
+        remoteUserId = _id;
+      } else {
+        ctx.body = {
+          code: 500,
+          msg: remoteResponse.data?.msg || '远程服务注册失败',
+          data: null,
+        } as ApiResponse;
+        return;
+      }
+    } catch (error: any) {
+      ctx.body = {
+        code: 500,
+        msg: '无法连接到远程用户服务',
+        data: null,
+      } as ApiResponse;
+      return;
+    }
+
+    // 使用远程获取的 user_id 存入本地 user 表
     const result = await ctx.service.user.register({
       username,
       password,
       signature: '世界和平。',
       avatar: defaultAvatar,
+      user_id: remoteUserId!,
     });
 
     if (result) {
       ctx.body = {
         code: 200,
         msg: '注册成功',
-        data: null,
+        data: { user_id: remoteUserId },
       } as ApiResponse;
     } else {
       ctx.body = {

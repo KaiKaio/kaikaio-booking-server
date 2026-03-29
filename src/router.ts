@@ -4,7 +4,7 @@ export default (app: Application): void => {
   const { router, controller, middleware } = app;
   const _jwt = middleware.jwtErr({ secret: app.config.jwt.secret });
   router.post('/api/user/login', controller.user.login);
-  router.post('/api/user/register', controller.user.register);
+  router.post('/api/user/register', controller.user.register); // 注册
   router.get('/api/user/get_userinfo', _jwt, controller.user.getUserInfo); // 获取用户信息
   router.post('/api/user/edit_userinfo', _jwt, controller.user.editUserInfo); // 修改用户个性签名
   router.post('/api/user/modify_pass', _jwt, controller.user.modifyPass); // 修改用户密码
