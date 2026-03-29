@@ -45,3 +45,26 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=registry,ref=docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:cache
           cache-to: type=registry,ref=docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:cache,mode=max
+
+      # CD: 触发部署（可选，需要在部署机运行 webhook 服务）
+      - name: Trigger Deploy
+        if: success()
+        run: |
+          echo "构建成功，开始触发部署..."
+          # 提取镜像标签
+          IMAGE_TAG="sha-${{ github.sha }}"
+          echo "部署标签: $IMAGE_TAG"
+          
+          # 调用部署机的 Webhook
+          # 注意：需要将 DEPLOY_WEBHOOK_URL 添加到 GitHub Secrets
+          if [ -n "${{ secrets.DEPLOY_WEBHOOK_URL }}" ]; then
+            curl -X POST "${{ secrets.DEPLOY_WEBHOOK_URL }}" \
+              -H "Content-Type: application/json" \
+              -d '{"tag":"'$IMAGE_TAG'","branch":"${{ github.ref_name }}","commit":"${{ github.sha }}"}' \
+              --max-time 30 \
+              -w "\nHTTP状态码: %{http_code}\n"
+            echo "部署请求已发送！"
+          else
+            echo "未配置 DEPLOY_WEBHOOK_URL，跳过自动部署"
+            echo "如需启用自动部署，请在仓库设置中添加 secrets.DEPLOY_WEBHOOK_URL"
+          fi

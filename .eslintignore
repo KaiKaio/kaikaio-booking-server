@@ -1,2 +1,4 @@
 coverage
 /app
+deploy.sh
+deploy-webhook.js
