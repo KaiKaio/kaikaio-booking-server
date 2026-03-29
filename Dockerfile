@@ -25,7 +25,8 @@ CMD ["node", "./node_modules/egg-scripts/bin/egg-scripts.js", "start", "--title=
 # -e PORT=7009 -e MYSQL_HOST=host.docker.internal 
 # -e MYSQL_PORT=3306 -e MYSQL_USER=root -e MYSQL_PASSWORD=chenkaiwei042 
 # -e MYSQL_DB=kaikaio-booking-db 
+# -e REMOTE_USER_SERVICE_URL=http://host.docker.internal:4000
 # -e JWT_PUBLIC_KEY="$(cat ./config/ssl_key/rsa_public_key.pem)"
 # kaikaioano/kaikaio-booking-server:branch-master
 
-# docker run -d --name kaikaio-booking-server -p 7009:7009 -e PORT=7009 -e MYSQL_HOST=host.docker.internal -e MYSQL_PORT=3306 -e MYSQL_USER=root -e MYSQL_PASSWORD=chenkaiwei042 -e MYSQL_DB=kaikaio-booking-db -e JWT_PUBLIC_KEY="$(cat ./config/ssl_key/rsa_public_key.pem)" kaikaioano/kaikaio-booking-server:branch-master
+# docker run -d --name kaikaio-booking-server -p 7009:7009 -e PORT=7009 -e REMOTE_USER_SERVICE_URL=http://host.docker.internal:4000 -e MYSQL_HOST=host.docker.internal -e MYSQL_PORT=3306 -e MYSQL_USER=root -e MYSQL_PASSWORD=chenkaiwei042 -e MYSQL_DB=kaikaio-booking-db -e JWT_PUBLIC_KEY="$(cat ./config/ssl_key/rsa_public_key.pem)" kaikaioano/kaikaio-booking-server:branch-master

@@ -29,13 +29,14 @@ export default class UserController extends Controller {
       return;
     }
 
-    // 调用本机 4000 端口的远程服务获取 _id
+    // 调用远程用户服务获取 _id
     let remoteUserId: string | null = null;
     try {
+      const remoteServiceUrl = process.env.REMOTE_USER_SERVICE_URL || 'http://127.0.0.1:4000';
       const remoteResponse = await app.curl<{
         _id: string;
         msg: string;
-      }>('http://127.0.0.1:4000/api/user/register', {
+      }>(`${remoteServiceUrl}/api/user/register`, {
         method: 'POST',
         contentType: 'json',
         data: { userName: username, password },
