@@ -75,6 +75,8 @@ export default class UserController extends Controller {
     });
 
     if (result) {
+      // 注册成功后，初始化用户预设类型
+      await ctx.service.type.initUserTypes(remoteUserId!);
       ctx.body = {
         code: 200,
         msg: '注册成功',
