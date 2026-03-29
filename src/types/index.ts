@@ -30,10 +30,13 @@ export interface Bill {
 
 // 账单类型
 export interface BillType {
-  id: number;
+  id?: number;
   name: string;
   type: number; // 1: 支出, 2: 收入
-  user_id?: number;
+  icon?: string;
+  user_id: string; // 所属用户ID，0或特定值表示系统预设模板
+  is_system?: number; // 是否是系统初始化自带的
+  is_delete?: number; // 软删除标识（未删除：0，已删除：1）
 }
 
 // 账本类型

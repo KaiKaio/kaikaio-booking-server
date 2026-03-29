@@ -9,6 +9,10 @@ export default (app: Application): void => {
   router.post('/api/user/edit_userinfo', _jwt, controller.user.editUserInfo); // 修改用户个性签名
   router.post('/api/user/modify_pass', _jwt, controller.user.modifyPass); // 修改用户密码
   router.get('/api/type/list', _jwt, controller.type.list); // 获取消费类型列表
+  router.get('/api/type/detail', _jwt, controller.type.detail); // 获取单个类型详情
+  router.post('/api/type/add', _jwt, controller.type.add); // 添加消费类型
+  router.post('/api/type/update', _jwt, controller.type.update); // 更新消费类型
+  router.post('/api/type/delete', _jwt, controller.type.delete); // 删除消费类型
 
   router.get('/api/bill/list', _jwt, controller.bill.list); // 获取账单列表
   router.post('/api/bill/add', _jwt, controller.bill.add); // 添加账单

@@ -555,7 +555,7 @@ export default class BillController extends Controller {
 
       const user_id = decode.userid;
 
-      const typeList = await ctx.service.type.list();
+      const typeList = await ctx.service.type.list(String(user_id));
 
       const dataMapIsTimiApp: Record<string, number> = {};
       if (typeList) {
