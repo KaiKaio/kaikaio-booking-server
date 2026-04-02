@@ -6,7 +6,7 @@ export default (app: Application): void => {
   router.post('/api/user/login', controller.user.login);
   router.post('/api/user/register', controller.user.register); // 注册
   router.get('/api/user/get_userinfo', _jwt, controller.user.getUserInfo); // 获取用户信息
-  router.post('/api/user/edit_userinfo', _jwt, controller.user.editUserInfo); // 修改用户个性签名、头像
+  router.post('/api/user/edit_userinfo', _jwt, controller.user.editUserInfo); // 修改用户个性签名、头像、用户名称
   router.post('/api/user/modify_pass', _jwt, controller.user.modifyPass); // 修改用户密码
   router.post('/api/user/upload/avatar', _jwt, controller.user.uploadAvatar); // 上传用户头像
   router.get('/api/type/list', _jwt, controller.type.list); // 获取消费类型列表

@@ -155,7 +155,9 @@ export default class UserController extends Controller {
 
   async editUserInfo(): Promise<void> {
     const { ctx, app } = this;
-    const { signature, avatar } = ctx.request.body as { signature?: string; avatar?: string };
+    const { signature, avatar, username } = ctx.request.body as {
+      signature?: string; avatar?: string; username?: string;
+    };
 
     try {
       const token = ctx.request.header.authorization as string;
@@ -191,6 +193,9 @@ export default class UserController extends Controller {
       if (avatar) {
         params.avatar = avatar;
       }
+      if (username) {
+        params.username = username;
+      }
 
       await ctx.service.user.editUserInfo(params);
 
@@ -200,7 +205,7 @@ export default class UserController extends Controller {
         data: {
           id: user_id,
           signature,
-          username: userInfo.username,
+          username,
           avatar,
         },
       };
@@ -215,25 +220,16 @@ export default class UserController extends Controller {
 
   async modifyPass(): Promise<void> {
     const { ctx, app } = this;
-    const { old_pass = '', new_pass = '', new_pass2 = '' } = ctx.request.body as {
-      old_pass: string;
-      new_pass: string;
-      new_pass2: string;
+    const { oldPassword = '', newPassword = '' } = ctx.request.body as {
+      oldPassword: string;
+      newPassword: string;
     };
 
     try {
       const token = ctx.request.header.authorization as string;
-      const decode = await app.jwt.verify(token, app.config.jwt.secret);
-      if (!decode) return;
-      if (decode.username === 'admin') {
-        ctx.body = {
-          code: 400,
-          msg: '管理员账户，不允许修改密码！',
-          data: null,
-        } as ApiResponse;
-        return;
-      }
-      const userInfo = await ctx.service.user.getUserByName(decode.username);
+      const decode = app.jwt.verify(token, app.config.jwt.secret);
+      if (!decode?.userid) return;
+      const userInfo = await ctx.service.user.getUserById(decode.userid);
       if (!userInfo) {
         ctx.body = {
           code: 500,
@@ -243,19 +239,25 @@ export default class UserController extends Controller {
         return;
       }
 
-      if (old_pass !== userInfo.password) {
-        ctx.body = {
-          code: 400,
-          msg: '原密码错误',
-          data: null,
-        } as ApiResponse;
-        return;
-      }
+      const remoteServiceUrl = process.env.REMOTE_USER_SERVICE_URL || 'http://127.0.0.1:4000';
+      const remoteResponse = await app.curl<{
+        _id: string;
+        msg: string;
+      }>(`${remoteServiceUrl}/api/user/changePassword`, {
+        method: 'POST',
+        contentType: 'json',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        data: { oldPassword, newPassword },
+        dataType: 'json',
+        timeout: 10000,
+      });
 
-      if (new_pass !== new_pass2) {
+      if (remoteResponse.status !== 200) {
         ctx.body = {
-          code: 400,
-          msg: '新密码不一致',
+          code: 500,
+          msg: remoteResponse.data?.msg || '修改密码失败',
           data: null,
         } as ApiResponse;
         return;
@@ -263,7 +265,7 @@ export default class UserController extends Controller {
 
       await ctx.service.user.modifyPass({
         ...userInfo,
-        password: new_pass,
+        password: newPassword,
       } as User);
 
       ctx.body = {
