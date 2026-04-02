@@ -51,7 +51,7 @@ module.exports = appInfo => {
   config.multipart = {
     mode: 'file',
     fileSize: '500kb',
-    whitelist: [ '.csv' ],
+    whitelist: [ '.csv', '.png', '.jpg', '.jpeg', '.gif', '.webp' ],
   };
 
   config.security = {

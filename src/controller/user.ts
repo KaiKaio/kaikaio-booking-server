@@ -1,5 +1,6 @@
 import { Controller } from 'egg';
 import { User, ApiResponse, JwtPayload } from '../types';
+import { processUploadFile } from '../utils/upload';
 
 const defaultAvatar = 'http://s.yezgea02.com/1615973940679/WeChat77d6d2ac093e24b8013f40d1f2fa98a2.png';
 
@@ -154,15 +155,23 @@ export default class UserController extends Controller {
 
   async editUserInfo(): Promise<void> {
     const { ctx, app } = this;
-    const { signature = '', avatar = '' } = ctx.request.body as { signature: string; avatar: string };
+    const { signature, avatar } = ctx.request.body as { signature?: string; avatar?: string };
 
     try {
       const token = ctx.request.header.authorization as string;
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
       if (!decode) return;
       const user_id = decode.userid;
+      if (!user_id) {
+        ctx.body = {
+          code: 500,
+          msg: '用户不存在',
+          data: null,
+        } as ApiResponse;
+        return;
+      }
 
-      const userInfo = await ctx.service.user.getUserByName(decode.username);
+      const userInfo = await ctx.service.user.getUserById(user_id);
       if (!userInfo) {
         ctx.body = {
           code: 500,
@@ -171,11 +180,19 @@ export default class UserController extends Controller {
         } as ApiResponse;
         return;
       }
-      await ctx.service.user.editUserInfo({
+
+      const params = {
         ...userInfo,
-        signature,
-        avatar,
-      } as User);
+      } as User;
+
+      if (signature) {
+        params.signature = signature;
+      }
+      if (avatar) {
+        params.avatar = avatar;
+      }
+
+      await ctx.service.user.editUserInfo(params);
 
       ctx.body = {
         code: 200,
@@ -279,4 +296,43 @@ export default class UserController extends Controller {
       };
     }
   }
+
+  async uploadAvatar(): Promise<void> {
+    const { ctx } = this;
+
+    if (!ctx.request.files || ctx.request.files.length === 0) {
+      ctx.body = {
+        code: 400,
+        msg: '请上传头像',
+        data: null,
+      } as ApiResponse;
+      return;
+    }
+
+    const file = ctx.request.files[0];
+    let fileUrl = '';
+
+    try {
+      fileUrl = await processUploadFile(file, this.config.uploadDir);
+    } catch (error) {
+      console.log(error, 'uploadAvatar-error');
+      ctx.body = {
+        code: 500,
+        msg: '上传失败',
+        data: null,
+      } as ApiResponse;
+      return;
+    } finally {
+      ctx.cleanupRequestFiles();
+    }
+
+    ctx.body = {
+      code: 200,
+      msg: '上传成功',
+      data: {
+        url: fileUrl,
+      },
+    };
+  }
 }
+
