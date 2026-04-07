@@ -173,13 +173,15 @@ export default class BillController extends Controller {
         date: dayjs(date).format('YYYY-MM-DD HH:mm:ss'),
         pay_type,
         remark,
-        client_local_id,
         user_id,
       } as Bill);
       ctx.body = {
         code: 200,
         msg: '请求成功',
-        data: result,
+        data: {
+          ...result,
+          client_local_id,
+        },
       } as ApiResponse;
     } catch (error) {
       ctx.body = {
@@ -323,13 +325,15 @@ export default class BillController extends Controller {
         date: dayjs(date).format('YYYY-MM-DD HH:mm:ss'),
         pay_type,
         remark,
-        client_local_id,
         user_id,
       } as Bill);
       ctx.body = {
         code: 200,
         msg: '请求成功',
-        data: result,
+        data: {
+          ...result,
+          client_local_id,
+        },
       } as ApiResponse;
     } catch (error) {
       ctx.body = {
