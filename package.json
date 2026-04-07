@@ -1,6 +1,6 @@
 {
   "name": "kaikaio-booking-server",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Kaikaio-Booking 服务端项目",
   "private": true,
   "egg": {
