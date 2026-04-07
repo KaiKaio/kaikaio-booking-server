@@ -215,7 +215,7 @@ export default class BillController extends Controller {
       const user_id = decode.userid;
 
       const params = bills.map((item: any) => {
-        const { amount, type_id, type_name, pay_type, remark = '', date, client_local_id = '' } = item;
+        const { amount, type_id, type_name, pay_type, remark = '', date } = item;
         if (!amount || !type_id || !type_name || !pay_type || !date) {
           throw new Error('参数错误');
         }
@@ -226,7 +226,6 @@ export default class BillController extends Controller {
           date: dayjs(date).format('YYYY-MM-DD HH:mm:ss'),
           pay_type,
           remark,
-          client_local_id,
           user_id,
         } as Bill;
       });

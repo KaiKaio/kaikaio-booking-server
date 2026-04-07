@@ -151,7 +151,7 @@ export default class BillService extends Service {
     }
   }
 
-  async batchAdd(params: Bill[]): Promise<MysqlResult | null> {
+  async batchAdd(params: Bill[]): Promise<MysqlResult | Error> {
     const { app } = this;
     try {
       await app.mysql.query('SET NAMES utf8mb4');
@@ -159,7 +159,7 @@ export default class BillService extends Service {
       return result;
     } catch (error: any) {
       this.logger.error('Service - Bill - batchAdd - Error:', error.message);
-      return null;
+      return new Error('批量添加账单失败');
     }
   }
 
