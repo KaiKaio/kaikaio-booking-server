@@ -26,6 +26,8 @@ export interface Bill {
   date: string;
   pay_type: number; // 1: 支出, 2: 收入
   remark?: string;
+  client_local_id?: string; // 客户端本地ID
+  create_time?: number;
 }
 
 // 账单类型

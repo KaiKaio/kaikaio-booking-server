@@ -135,12 +135,16 @@ export default class BillService extends Service {
     }
   }
 
-  async add(params: Bill): Promise<MysqlResult | null> {
+  async add(params: Bill): Promise<Bill | null> {
     const { app } = this;
     try {
       await app.mysql.query('SET NAMES utf8mb4');
       const result = await app.mysql.insert('bill', params);
-      return result;
+      if (result && result.insertId) {
+        const bill = await app.mysql.get('bill', { id: result.insertId, user_id: params.user_id });
+        return bill as Bill | null;
+      }
+      return null;
     } catch (error: any) {
       this.logger.error('Service - Bill - add - Error:', error.message);
       return null;
@@ -170,10 +174,10 @@ export default class BillService extends Service {
     }
   }
 
-  async update(params: Bill): Promise<MysqlResult | null> {
+  async update(params: Bill): Promise<Bill | null> {
     const { app } = this;
     try {
-      const result = await app.mysql.update(
+      await app.mysql.update(
         'bill',
         {
           ...params,
@@ -183,7 +187,8 @@ export default class BillService extends Service {
           user_id: params.user_id,
         }
       );
-      return result;
+      const bill = await app.mysql.get('bill', { id: params.id, user_id: params.user_id });
+      return bill as Bill | null;
     } catch (error: any) {
       this.logger.error('Service - Bill - update - Error:', error.message);
       return null;

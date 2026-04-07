@@ -142,13 +142,14 @@ export default class BillController extends Controller {
 
   async add(): Promise<void> {
     const { ctx, app } = this;
-    const { amount, type_id, type_name, pay_type, remark = '', date } = ctx.request.body as {
+    const { amount, type_id, type_name, pay_type, remark = '', date, client_local_id = '' } = ctx.request.body as {
 			amount: number;
 			type_id: number;
 			type_name: string;
 			pay_type: number;
 			remark?: string;
 			date: string;
+			client_local_id?: string;
 		};
 
     if (!amount || !type_id || !type_name || !pay_type || !date) {
@@ -165,19 +166,20 @@ export default class BillController extends Controller {
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
       if (!decode) return;
       const user_id = decode.userid;
-      await ctx.service.bill.add({
+      const result = await ctx.service.bill.add({
         amount,
         type_id,
         type_name,
         date: dayjs(date).format('YYYY-MM-DD HH:mm:ss'),
         pay_type,
         remark,
+        client_local_id,
         user_id,
       } as Bill);
       ctx.body = {
         code: 200,
         msg: '请求成功',
-        data: null,
+        data: result,
       } as ApiResponse;
     } catch (error) {
       ctx.body = {
@@ -211,7 +213,7 @@ export default class BillController extends Controller {
       const user_id = decode.userid;
 
       const params = bills.map((item: any) => {
-        const { amount, type_id, type_name, pay_type, remark = '', date } = item;
+        const { amount, type_id, type_name, pay_type, remark = '', date, client_local_id = '' } = item;
         if (!amount || !type_id || !type_name || !pay_type || !date) {
           throw new Error('参数错误');
         }
@@ -222,6 +224,7 @@ export default class BillController extends Controller {
           date: dayjs(date).format('YYYY-MM-DD HH:mm:ss'),
           pay_type,
           remark,
+          client_local_id,
           user_id,
         } as Bill;
       });
@@ -287,7 +290,7 @@ export default class BillController extends Controller {
 
   async update(): Promise<void> {
     const { ctx, app } = this;
-    const { id, amount, type_id, type_name, date, pay_type, remark = '' } = ctx.request.body as {
+    const { id, amount, type_id, type_name, date, pay_type, remark = '', client_local_id = '' } = ctx.request.body as {
 			id: number;
 			amount: number;
 			type_id: number;
@@ -295,6 +298,7 @@ export default class BillController extends Controller {
 			date: string;
 			pay_type: number;
 			remark?: string;
+			client_local_id?: string;
 		};
 
     if (!amount || !type_id || !type_name || !date || !pay_type) {
@@ -311,7 +315,7 @@ export default class BillController extends Controller {
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
       if (!decode) return;
       const user_id = decode.userid;
-      await ctx.service.bill.update({
+      const result = await ctx.service.bill.update({
         id,
         amount,
         type_id,
@@ -319,12 +323,13 @@ export default class BillController extends Controller {
         date: dayjs(date).format('YYYY-MM-DD HH:mm:ss'),
         pay_type,
         remark,
+        client_local_id,
         user_id,
       } as Bill);
       ctx.body = {
         code: 200,
         msg: '请求成功',
-        data: null,
+        data: result,
       } as ApiResponse;
     } catch (error) {
       ctx.body = {
