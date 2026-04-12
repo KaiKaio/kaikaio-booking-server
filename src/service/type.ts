@@ -5,7 +5,7 @@ export default class TypeService extends Service {
   // 获取标签列表（仅用户自定义类型）
   async list(user_id: string): Promise<BillType[] | null> {
     const { app } = this;
-    const QUERY_STR = 'id, name, type, icon, user_id, is_system';
+    const QUERY_STR = 'id, name, type, icon, user_id, is_system, background_color';
     const sql = `SELECT ${QUERY_STR} FROM type WHERE is_delete = 0 AND user_id = ? ORDER BY id ASC`;
     try {
       const result = await app.mysql.query(sql, [ user_id ]);
@@ -21,7 +21,7 @@ export default class TypeService extends Service {
     const { app } = this;
     try {
       const result = await app.mysql.query<BillType[]>(
-        'SELECT id, name, type, icon, user_id, is_system FROM type WHERE id = ? AND is_delete = 0 AND user_id = ?',
+        'SELECT id, name, type, icon, user_id, is_system, background_color FROM type WHERE id = ? AND is_delete = 0 AND user_id = ?',
         [ id, user_id ]
       );
       return result && result.length > 0 ? result[0] : null;
