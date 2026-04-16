@@ -24,6 +24,7 @@ export default (app: Application): void => {
   router.get('/api/bill/data', _jwt, controller.bill.data); // 获取数据
   router.post('/api/bill/import', controller.bill.import); // 导入账单
   router.get('/api/bill/getEarliestItemDate', controller.bill.getEarliestItemDate); // 查询类型最早日期
+  router.get('/api/bill/getMonthList', _jwt, controller.bill.getMonthList); // 查询月份列表
   router.get('/api/bill/queyBillByMonthly', controller.bill.queyBillByMonthly);
 
   router.get('/api/books/list', _jwt, controller.books.list); // 获取账本列表

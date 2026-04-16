@@ -140,6 +140,38 @@ export default class BillController extends Controller {
     }
   }
 
+  async getMonthList(): Promise<void> {
+    const { ctx, app } = this;
+    const {
+      type_id = '',
+    } = ctx.query as { type_id?: string };
+    try {
+      const token = ctx.request.header.authorization as string;
+      const decode = await app.jwt.verify(token, app.config.jwt.secret);
+
+      if (!decode) {
+        return;
+      }
+
+      const user_id = decode.userid;
+
+      const monthList = await ctx.service.bill.getMonthList({ user_id: String(user_id), type_id });
+
+      ctx.body = {
+        code: 200,
+        msg: '请求成功',
+        data: monthList || [],
+      };
+    } catch (err) {
+      console.log(err, '查询月份列表抛错');
+      ctx.body = {
+        code: 500,
+        msg: '系统错误',
+        data: null,
+      } as ApiResponse;
+    }
+  }
+
   async add(): Promise<void> {
     const { ctx, app } = this;
     const { amount, type_id, type_name, pay_type, remark = '', date, client_local_id = '' } = ctx.request.body as {

@@ -135,6 +135,34 @@ export default class BillService extends Service {
     }
   }
 
+  async getMonthList({
+    type_id = '',
+    user_id = '',
+  }: {
+    type_id?: string;
+    user_id?: string;
+  }): Promise<string[] | null> {
+    const { app } = this;
+    try {
+      let sql = 'SELECT DISTINCT YEAR(date) as year, MONTH(date) as month FROM bill WHERE user_id = ?';
+      const params: (string | number)[] = [ user_id ];
+
+      if (type_id) {
+        sql += ' AND type_id = ?';
+        params.push(parseInt(type_id));
+      }
+
+      sql += ' ORDER BY year, month';
+
+      const result = await app.mysql.query(sql, params);
+      const monthList = result.map((item: any) => `${item.year}/${String(item.month).padStart(2, '0')}`);
+      return monthList;
+    } catch (error: any) {
+      this.logger.error('Service - Bill - getMonthList - Error:', error.message);
+      return null;
+    }
+  }
+
   async add(params: Bill): Promise<Bill | null> {
     const { app } = this;
     try {
