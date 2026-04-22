@@ -17,6 +17,7 @@ services:
       - MYSQL_PASSWORD=chenkaiwei042
       - MYSQL_DB=kaikaio-booking-db
     restart: unless-stopped
+    mem_limit: 512m
 
 # 注意：请创建 .env 文件，并设置 JWT_PUBLIC_KEY 的值
 # JWT_PUBLIC_KEY=你的RSA公钥内容（从 ./config/ssl_key/rsa_public_key.pem 复制）

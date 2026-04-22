@@ -11,7 +11,7 @@ RUN apk add --no-cache tzdata && \
     echo "Asia/Shanghai" > /etc/timezone
 ENV NODE_ENV=production \
     EGG_SERVER_ENV=prod \
-    NODE_OPTIONS="--max-old-space-size=256"
+    NODE_OPTIONS="--max-old-space-size=192"
 ENV TZ=Asia/Shanghai
 EXPOSE 7009
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s \
