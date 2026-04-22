@@ -1,0 +1,22 @@
+services:
+  kaikaio-booking-server:
+    image: kaikaioano/kaikaio-booking-server:branch-master
+    container_name: kaikaio-booking-server
+    ports:
+      - "7009:7009"
+    volumes:
+      - F:/Kaikaio_Booking_Server_Files:/app/app/public/upload
+    env_file:
+      - .env
+    environment:
+      - PORT=7009
+      - REMOTE_USER_SERVICE_URL=http://host.docker.internal:4000
+      - MYSQL_HOST=host.docker.internal
+      - MYSQL_PORT=3306
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=chenkaiwei042
+      - MYSQL_DB=kaikaio-booking-db
+    restart: unless-stopped
+
+# 注意：请创建 .env 文件，并设置 JWT_PUBLIC_KEY 的值
+# JWT_PUBLIC_KEY=你的RSA公钥内容（从 ./config/ssl_key/rsa_public_key.pem 复制）

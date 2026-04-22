@@ -16,6 +16,8 @@ config/ssl_key/
 app/public/upload/*
 !app/public/upload/.gitkeep
 
+.env
+
 # qoder Editor
 .qoder
 
