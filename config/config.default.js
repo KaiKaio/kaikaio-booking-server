@@ -76,6 +76,9 @@ module.exports = appInfo => {
 
   exports.mysql = {
     client: {
+      connectionLimit: 5, // 最大连接数
+      waitForConnections: true,
+      queueLimit: 0, // 队列中的请求数限制，0为不限制
       host: process.env.MYSQL_HOST || 'localhost',
       port: process.env.MYSQL_PORT || '3306',
       user: process.env.MYSQL_USER || 'root',
