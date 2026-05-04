@@ -37,7 +37,12 @@ module.exports = appInfo => {
   config.keys = appInfo.name + '_1606747991901_2392';
 
   // add your middleware config here
-  config.middleware = [];
+  config.middleware = ['apiLogger'];
+
+  config.apiLogger = {
+    excludePaths: ['/health', '/favicon.ico'],
+    sampleRate: 1,
+  };
 
   config.jwt = {
     // secret: 'Kaikaio',

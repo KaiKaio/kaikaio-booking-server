@@ -2,10 +2,11 @@ import { Context } from 'egg';
 
 export default function jwtErr(options: { secret: string }): any {
   return async function jwtErrMiddleware(ctx: Context, next: () => Promise<any>): Promise<void> {
-    const token = ctx.request.header.authorization; // 若是没有 token，返回的是 null 字符串
+    const token = ctx.request.header.authorization;
     if (token !== 'null' && token) {
       try {
-        ctx.app.jwt.verify(token as string, options.secret); // 验证token
+        const decoded = ctx.app.jwt.verify(token as string, options.secret);
+        ctx.state.user = decoded;
         await next();
       } catch (error) {
         console.log('error', error);
