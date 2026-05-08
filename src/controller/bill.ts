@@ -563,6 +563,11 @@ export default class BillController extends Controller {
         data: formateResult,
       };
     } catch (err) {
+      ctx.body = {
+        code: 500,
+        msg: '服务器错误',
+        data: null,
+      };
       console.log(err, 'queyBillByMonthly - con -error');
     }
   }

@@ -3,10 +3,12 @@
 /* eslint-disable */
 
 import 'egg';
+import ExportApiLogger from '../../../src/middleware/apiLogger';
 import ExportJwtErr from '../../../src/middleware/jwtErr';
 
 declare module 'egg' {
   interface IMiddleware {
+    apiLogger: typeof ExportApiLogger;
     jwtErr: typeof ExportJwtErr;
   }
 }
