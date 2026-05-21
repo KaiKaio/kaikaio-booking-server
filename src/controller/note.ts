@@ -2,6 +2,45 @@ import { Controller } from 'egg';
 import { ApiResponse } from '../types';
 
 export default class NoteController extends Controller {
+  /**
+   * @swagger
+   * /api/note/list:
+   *   get:
+   *     summary: 获取笔记列表
+   *     tags: [Note]
+   *     security:
+   *       - BearerAuth: []
+   *     responses:
+   *       200:
+   *         description: 成功获取笔记列表
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 code:
+   *                   type: integer
+   *                   example: 200
+   *                 msg:
+   *                   type: string
+   *                   example: 请求成功
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     list:
+   *                       type: array
+   *                       items:
+   *                         type: object
+   *                         properties:
+   *                           id:
+   *                             type: integer
+   *                           content:
+   *                             type: string
+   *                           create_time:
+   *                             type: integer
+   *                           update_time:
+   *                             type: integer
+   */
   async list(): Promise<void> {
     const { ctx, app } = this;
     // 通过 token 解析，拿到 user_id
@@ -27,6 +66,34 @@ export default class NoteController extends Controller {
     };
   }
 
+  /**
+   * @swagger
+   * /api/note/add:
+   *   post:
+   *     summary: 添加笔记
+   *     tags: [Note]
+   *     security:
+   *       - BearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - note
+   *             properties:
+   *               note:
+   *                 type: string
+   *                 description: 笔记内容
+   *     responses:
+   *       200:
+   *         description: 添加成功
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/ApiResponse'
+   */
   async add(): Promise<void> {
     const { ctx, app } = this;
     const { note } = ctx.request.body as { note: string };
@@ -74,6 +141,34 @@ export default class NoteController extends Controller {
     }
   }
 
+  /**
+   * @swagger
+   * /api/note/delete:
+   *   post:
+   *     summary: 删除笔记
+   *     tags: [Note]
+   *     security:
+   *       - BearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - id
+   *             properties:
+   *               id:
+   *                 type: integer
+   *                 description: 笔记ID
+   *     responses:
+   *       200:
+   *         description: 删除成功
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/ApiResponse'
+   */
   async delete(): Promise<void> {
     const { ctx, app } = this;
     const { id } = ctx.request.body as { id: number };
@@ -116,6 +211,38 @@ export default class NoteController extends Controller {
     }
   }
 
+  /**
+   * @swagger
+   * /api/note/update:
+   *   post:
+   *     summary: 更新笔记
+   *     tags: [Note]
+   *     security:
+   *       - BearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - id
+   *               - note
+   *             properties:
+   *               id:
+   *                 type: integer
+   *                 description: 笔记ID
+   *               note:
+   *                 type: string
+   *                 description: 笔记内容
+   *     responses:
+   *       200:
+   *         description: 更新成功
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/ApiResponse'
+   */
   async update(): Promise<void> {
     const { ctx, app } = this;
     const { id, note } = ctx.request.body as { id: number; note: string };

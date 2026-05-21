@@ -3,6 +3,43 @@ import { ApiResponse } from '../types';
 import { processUploadFile } from '../utils/upload';
 
 export default class UploadController extends Controller {
+  /**
+   * @swagger
+   * /api/upload/upload:
+   *   post:
+   *     summary: 上传文件
+   *     tags: [Upload]
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         multipart/form-data:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               file:
+   *                 type: string
+   *                 format: binary
+   *                 description: 上传的文件
+   *     responses:
+   *       200:
+   *         description: 上传成功
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 code:
+   *                   type: integer
+   *                   example: 200
+   *                 msg:
+   *                   type: string
+   *                   example: 上传成功
+   *                 data:
+   *                   type: string
+   *                   description: 文件访问URL
+   *       400:
+   *         description: 请上传文件
+   */
   async upload(): Promise<void> {
     const { ctx } = this;
 

@@ -2,7 +2,36 @@ import { Controller } from 'egg';
 import { ApiResponse, BillType } from '../types';
 
 export default class TypeController extends Controller {
-  // 获取类型列表
+  /**
+   * @swagger
+   * /api/type/list:
+   *   get:
+   *     summary: 获取消费类型列表
+   *     tags: [Type]
+   *     security:
+   *       - BearerAuth: []
+   *     responses:
+   *       200:
+   *         description: 成功获取类型列表
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 code:
+   *                   type: integer
+   *                   example: 200
+   *                 msg:
+   *                   type: string
+   *                   example: 请求成功
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     list:
+   *                       type: array
+   *                       items:
+   *                         $ref: '#/components/schemas/BillType'
+   */
   async list(): Promise<void> {
     const { ctx, app } = this;
     // 通过 token 解析，拿到 user_id
@@ -20,7 +49,42 @@ export default class TypeController extends Controller {
     };
   }
 
-  // 获取单个类型详情
+  /**
+   * @swagger
+   * /api/type/detail:
+   *   get:
+   *     summary: 获取单个类型详情
+   *     tags: [Type]
+   *     security:
+   *       - BearerAuth: []
+   *     parameters:
+   *       - in: query
+   *         name: id
+   *         schema:
+   *           type: integer
+   *         required: true
+   *         description: 类型ID
+   *     responses:
+   *       200:
+   *         description: 成功获取类型详情
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 code:
+   *                   type: integer
+   *                   example: 200
+   *                 msg:
+   *                   type: string
+   *                   example: 请求成功
+   *                 data:
+   *                   $ref: '#/components/schemas/BillType'
+   *       400:
+   *         description: 类型ID不能为空
+   *       404:
+   *         description: 类型不存在
+   */
   async detail(): Promise<void> {
     const { ctx, app } = this;
     const { id } = ctx.query as { id?: string };
@@ -64,7 +128,54 @@ export default class TypeController extends Controller {
     }
   }
 
-  // 添加类型
+  /**
+   * @swagger
+   * /api/type/add:
+   *   post:
+   *     summary: 添加消费类型
+   *     tags: [Type]
+   *     security:
+   *       - BearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - name
+   *               - type
+   *             properties:
+   *               name:
+   *                 type: string
+   *                 description: 类型名称
+   *               type:
+   *                 type: integer
+   *                 enum: [1, 2]
+   *                 description: '1: 支出, 2: 收入'
+   *               icon:
+   *                 type: string
+   *                 description: 图标
+   *     responses:
+   *       200:
+   *         description: 添加成功
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 code:
+   *                   type: integer
+   *                   example: 200
+   *                 msg:
+   *                   type: string
+   *                   example: 添加成功
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     id:
+   *                       type: integer
+   */
   async add(): Promise<void> {
     const { ctx, app } = this;
     const { name, type, icon } = ctx.request.body as { name: string; type: number; icon?: string };
@@ -115,7 +226,46 @@ export default class TypeController extends Controller {
     }
   }
 
-  // 更新类型
+  /**
+   * @swagger
+   * /api/type/update:
+   *   post:
+   *     summary: 更新消费类型
+   *     tags: [Type]
+   *     security:
+   *       - BearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - id
+   *               - name
+   *               - type
+   *             properties:
+   *               id:
+   *                 type: integer
+   *                 description: 类型ID
+   *               name:
+   *                 type: string
+   *                 description: 类型名称
+   *               type:
+   *                 type: integer
+   *                 enum: [1, 2]
+   *                 description: '1: 支出, 2: 收入'
+   *               icon:
+   *                 type: string
+   *                 description: 图标
+   *     responses:
+   *       200:
+   *         description: 更新成功
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/ApiResponse'
+   */
   async update(): Promise<void> {
     const { ctx, app } = this;
     const { id, name, type, icon } = ctx.request.body as { id: number; name: string; type: number; icon?: string };
@@ -178,7 +328,34 @@ export default class TypeController extends Controller {
     }
   }
 
-  // 删除类型（软删除）
+  /**
+   * @swagger
+   * /api/type/delete:
+   *   post:
+   *     summary: 删除消费类型（软删除）
+   *     tags: [Type]
+   *     security:
+   *       - BearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - id
+   *             properties:
+   *               id:
+   *                 type: integer
+   *                 description: 类型ID
+   *     responses:
+   *       200:
+   *         description: 删除成功
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/ApiResponse'
+   */
   async delete(): Promise<void> {
     const { ctx, app } = this;
     const { id } = ctx.request.body as { id: number };

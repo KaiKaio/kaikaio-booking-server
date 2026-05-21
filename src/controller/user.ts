@@ -5,6 +5,36 @@ import { processUploadFile } from '../utils/upload';
 const defaultAvatar = 'http://s.yezgea02.com/1615973940679/WeChat77d6d2ac093e24b8013f40d1f2fa98a2.png';
 
 export default class UserController extends Controller {
+  /**
+   * @swagger
+   * /api/user/register:
+   *   post:
+   *     summary: 用户注册
+   *     tags: [User]
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - username
+   *               - password
+   *             properties:
+   *               username:
+   *                 type: string
+   *                 description: 用户名
+   *               password:
+   *                 type: string
+   *                 description: 密码
+   *     responses:
+   *       200:
+   *         description: 注册成功
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/ApiResponse'
+   */
   async register(): Promise<void> {
     const { ctx, app } = this;
     const { username, password } = ctx.request.body as { username: string; password: string };
@@ -92,6 +122,48 @@ export default class UserController extends Controller {
     }
   }
 
+  /**
+   * @swagger
+   * /api/user/login:
+   *   post:
+   *     summary: 用户登录
+   *     tags: [User]
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - username
+   *               - password
+   *             properties:
+   *               username:
+   *                 type: string
+   *                 description: 用户名
+   *               password:
+   *                 type: string
+   *                 description: 密码
+   *     responses:
+   *       200:
+   *         description: 登录成功，返回 JWT token
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 code:
+   *                   type: integer
+   *                   example: 200
+   *                 message:
+   *                   type: string
+   *                   example: 登录成功
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     token:
+   *                       type: string
+   */
   async login(): Promise<void> {
     // app 为全局属性，相当于所有的插件方法都植入到了 app 对象
     const { ctx, app } = this;
@@ -136,6 +208,33 @@ export default class UserController extends Controller {
     };
   }
 
+  /**
+   * @swagger
+   * /api/user/get_userinfo:
+   *   get:
+   *     summary: 获取用户信息
+   *     tags: [User]
+   *     security:
+   *       - BearerAuth: []
+   *     responses:
+   *       200:
+   *         description: 成功获取用户信息
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 code:
+   *                   type: integer
+   *                   example: 200
+   *                 msg:
+   *                   type: string
+   *                   example: success
+   *                 data:
+   *                   $ref: '#/components/schemas/User'
+   *       401:
+   *         description: 未授权，token 无效或过期
+   */
   async getUserInfo(): Promise<void> {
     const { ctx, app } = this;
     const token = ctx.request.header.authorization as string;
@@ -153,6 +252,38 @@ export default class UserController extends Controller {
     };
   }
 
+  /**
+   * @swagger
+   * /api/user/edit_userinfo:
+   *   post:
+   *     summary: 编辑用户信息
+   *     tags: [User]
+   *     security:
+   *       - BearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               signature:
+   *                 type: string
+   *                 description: 个性签名
+   *               avatar:
+   *                 type: string
+   *                 description: 头像URL
+   *               username:
+   *                 type: string
+   *                 description: 用户名
+   *     responses:
+   *       200:
+   *         description: 编辑成功
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/ApiResponse'
+   */
   async editUserInfo(): Promise<void> {
     const { ctx, app } = this;
     const { signature, avatar, username } = ctx.request.body as {
@@ -218,6 +349,38 @@ export default class UserController extends Controller {
     }
   }
 
+  /**
+   * @swagger
+   * /api/user/modify_pass:
+   *   post:
+   *     summary: 修改用户密码
+   *     tags: [User]
+   *     security:
+   *       - BearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - oldPassword
+   *               - newPassword
+   *             properties:
+   *               oldPassword:
+   *                 type: string
+   *                 description: 旧密码
+   *               newPassword:
+   *                 type: string
+   *                 description: 新密码
+   *     responses:
+   *       200:
+   *         description: 修改成功
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/ApiResponse'
+   */
   async modifyPass(): Promise<void> {
     const { ctx, app } = this;
     const { oldPassword = '', newPassword = '' } = ctx.request.body as {
@@ -282,6 +445,28 @@ export default class UserController extends Controller {
     }
   }
 
+  /**
+   * @swagger
+   * /api/user/verify:
+   *   post:
+   *     summary: 验证token是否有效
+   *     tags: [User]
+   *     security:
+   *       - BearerAuth: []
+   *     responses:
+   *       200:
+   *         description: token有效
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 code:
+   *                   type: integer
+   *                   example: 200
+   *       401:
+   *         description: token无效或过期
+   */
   async verify(): Promise<void> {
     const { ctx, app } = this;
     const { authorization } = ctx.request.header;
@@ -299,6 +484,46 @@ export default class UserController extends Controller {
     }
   }
 
+  /**
+   * @swagger
+   * /api/user/upload/avatar:
+   *   post:
+   *     summary: 上传用户头像
+   *     tags: [User]
+   *     security:
+   *       - BearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         multipart/form-data:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               file:
+   *                 type: string
+   *                 format: binary
+   *                 description: 头像文件
+   *     responses:
+   *       200:
+   *         description: 上传成功
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 code:
+   *                   type: integer
+   *                   example: 200
+   *                 msg:
+   *                   type: string
+   *                   example: 上传成功
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     url:
+   *                       type: string
+   *                       description: 头像URL
+   */
   async uploadAvatar(): Promise<void> {
     const { ctx } = this;
 
