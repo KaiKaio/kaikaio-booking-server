@@ -1,14 +1,14 @@
-import { Context, Application } from 'egg';
+import { Context } from 'egg';
 
-export default function apiLogger(options: { 
-  excludePaths?: string[]; 
+export default function apiLogger(options: {
+  excludePaths?: string[];
   sampleRate?: number;
 }): any {
-  const excludePaths = options.excludePaths || ['/health', '/favicon.ico'];
+  const excludePaths = options.excludePaths || [ '/health', '/favicon.ico' ];
   const sampleRate = options.sampleRate || 1;
 
   return async function apiLoggerMiddleware(ctx: Context, next: () => Promise<any>): Promise<void> {
-    if (excludePaths.some(p => ctx.path.startsWith(p))) {
+    if (excludePaths.some(p => ctx.path === p)) {
       await next();
       return;
     }
