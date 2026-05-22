@@ -1,4 +1,4 @@
-import { Application } from 'egg';
+// import { Application } from 'egg';
 
 export interface SwaggerOptions {
   definition: {
@@ -24,7 +24,8 @@ export interface SwaggerOptions {
   apis: string[];
 }
 
-export default (app: Application): SwaggerOptions => {
+// export default (app: Application): SwaggerOptions => {
+export default (): SwaggerOptions => {
   const config: SwaggerOptions = {
     definition: {
       openapi: '3.0.0',
@@ -35,7 +36,7 @@ export default (app: Application): SwaggerOptions => {
       },
       servers: [
         {
-          url: 'http://localhost:7001',
+          url: 'http://localhost:7009',
           description: '开发环境',
         },
       ],
@@ -75,7 +76,7 @@ export default (app: Application): SwaggerOptions => {
               type_name: { type: 'string' },
               amount: { type: 'number' },
               date: { type: 'string', format: 'date-time' },
-              pay_type: { type: 'integer', enum: [1, 2], description: '1: 支出, 2: 收入' },
+              pay_type: { type: 'integer', enum: [ 1, 2 ], description: '1: 支出, 2: 收入' },
               remark: { type: 'string' },
             },
           },
@@ -84,7 +85,7 @@ export default (app: Application): SwaggerOptions => {
             properties: {
               id: { type: 'integer' },
               name: { type: 'string' },
-              type: { type: 'integer', enum: [1, 2] },
+              type: { type: 'integer', enum: [ 1, 2 ] },
               icon: { type: 'string' },
               user_id: { type: 'string' },
             },

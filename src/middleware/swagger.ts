@@ -3,24 +3,24 @@ import swaggerJSDoc from 'swagger-jsdoc';
 
 export default (app: Application): void => {
   const swaggerConfig = require('../config/swagger').default(app);
-  
+
   try {
     const specs = swaggerJSDoc(swaggerConfig);
-    
+
     // 提供 Swagger JSON
-    app.router.get('/swagger.json', (ctx) => {
+    app.router.get('/swagger.json', ctx => {
       ctx.body = specs;
     });
-    
+
     // Swagger UI 页面
-    app.router.get('/api-docs', (ctx) => {
+    app.router.get('/api-docs', ctx => {
       ctx.type = 'text/html; charset=utf-8';
       ctx.body = getSwaggerUIHTML();
     });
-    
+
     console.log('✅ Swagger API 文档已启动');
-    console.log('📚 访问地址: http://localhost:7001/api-docs');
-    console.log('📄 Swagger JSON: http://localhost:7001/swagger.json');
+    console.log('📚 访问地址: http://localhost:7009/api-docs');
+    console.log('📄 Swagger JSON: http://localhost:7009/swagger.json');
   } catch (error) {
     console.error('❌ Swagger 初始化失败:', error);
   }

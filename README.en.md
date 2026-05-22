@@ -114,7 +114,7 @@ MYSQL_PASSWORD=your_password
 MYSQL_DATABASE=kaikaio_booking
 
 # Application
-APP_PORT=7001
+APP_PORT=7009
 ```
 
 ### Initialize Database
@@ -129,7 +129,7 @@ npm run autod
 npm run dev
 ```
 
-The service runs on `http://localhost:7001` by default.
+The service runs on `http://localhost:7009` by default.
 
 ### Other Commands
 
@@ -223,7 +223,7 @@ npm run lint         # Lint code
 docker build -t kaikaio-booking-server .
 
 # Run container
-docker run -p 7001:7001 --name kaikaio-booking-server kaikaio-booking-server
+docker run -p 7009:7009 --name kaikaio-booking-server kaikaio-booking-server
 ```
 
 ### Environment Variables

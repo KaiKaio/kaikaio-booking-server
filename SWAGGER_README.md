@@ -18,8 +18,8 @@ npm run dev
 
 启动后可通过以下地址访问：
 
-- **Swagger UI 界面**: http://localhost:7001/api-docs
-- **Swagger JSON**: http://localhost:7001/swagger.json
+- **Swagger UI 界面**: http://localhost:7009/api-docs
+- **Swagger JSON**: http://localhost:7009/swagger.json
 
 ## 文档编写规范
 
@@ -168,4 +168,4 @@ async login(): Promise<void> {
 
 ## 测试
 
-启动项目后访问 http://localhost:7001/api-docs，应该能看到已定义的接口文档。
+启动项目后访问 http://localhost:7009/api-docs，应该能看到已定义的接口文档。

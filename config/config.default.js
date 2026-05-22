@@ -15,7 +15,7 @@ module.exports = appInfo => {
    **/
   const config = exports = {};
 
-  let public_key = process.env.JWT_PUBLIC_KEY;
+  let public_key = process.env.JWT_PUBLIC_KEY || '-----BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzNwjct4i6phtF8ZkPqCM5mw6yshcKt3S/LItlcHTWDF82uLGW8rzc5lpsgj6KI6FKyXzu0ahPboFKUEeKg/hXws68XzPKLHnZcSVM+tB1TYnP73U/K436j/MZMrvXKo5u+CxlI6qSR/qmNs626rp4OwgyJfK9ybYIg+FbxlKOINMjdYZtw8a+2BrFjtr5WNaeHwIbanre/hUE7wzA68FcgWk2tQ7/plZONsL3om5r9ImPC5beV7Z5tAR12lR7S+dIcJzYL/4sMXOWsXAjzAcrFzKpLbOGBPWCxzhC9Z5cnL2o6XulQyo8w3h9J2jkYVhRuvvTqJdqcrFmauJt+5t7QIDAQAB-----END PUBLIC KEY-----';
 
   if (!public_key) {
     const keyPath = path.join(appInfo.baseDir, 'config/ssl_key/rsa_public_key.pem');
@@ -84,7 +84,7 @@ module.exports = appInfo => {
       connectionLimit: 3, // 最大连接数
       waitForConnections: true,
       queueLimit: 0, // 队列中的请求数限制，0为不限制
-      host: process.env.MYSQL_HOST || 'localhost',
+      host: process.env.MYSQL_HOST || '10.242.46.156',
       port: process.env.MYSQL_PORT || '3306',
       user: process.env.MYSQL_USER || 'root',
       password: process.env.MYSQL_PASSWORD || 'chenkaiwei042',
