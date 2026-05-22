@@ -183,6 +183,10 @@ describe('test/app/service/bill.test.ts', () => {
             affectedRows: 1, // 模拟插入成功
             insertId: 10, // 模拟新记录ID
           }),
+          get: async () => ({
+            affectedRows: 1, // 模拟插入成功
+            insertId: 10, // 模拟新记录ID
+          }), // 添加 get 方法
         });
 
         const result = await ctx.service.bill.add(billParams);
@@ -272,6 +276,9 @@ describe('test/app/service/bill.test.ts', () => {
         mock(app, 'mysql', {
           update: async () => ({
             affectedRows: 1, // 模拟更新成功
+          }),
+          get: async () => ({
+            affectedRows: 1, // 模拟插入成功
           }),
         });
 

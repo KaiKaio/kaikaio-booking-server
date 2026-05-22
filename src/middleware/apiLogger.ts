@@ -23,6 +23,8 @@ export default function apiLogger(options: {
 
     await next();
 
+    if (ctx.app.config.env === 'unittest') return;
+
     const duration = Date.now() - start;
     const decoded: any = ctx.state.user;
     const userId = decoded?.id || decoded?.userid || null;

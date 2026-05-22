@@ -58,7 +58,7 @@ export default class UploadController extends Controller {
     try {
       fileUrl = await processUploadFile(file, this.config.uploadDir);
     } catch (error) {
-      console.log(error, 'upload - error')
+      console.log(error, 'upload - error');
       ctx.body = {
         code: 500,
         msg: '上传失败',

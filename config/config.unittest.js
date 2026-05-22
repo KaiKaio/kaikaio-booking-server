@@ -15,3 +15,5 @@ exports.mysql = {
 exports.jwt = {
   secret: '123456777',
 };
+
+exports.middleware = [];

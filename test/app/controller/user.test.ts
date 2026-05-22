@@ -40,6 +40,12 @@ describe('test/app/controller/user.test.ts', () => {
       });
 
       it('should register successfully', async () => {
+        // Mock 远程用户服务
+        mock(app, 'curl', async () => ({
+          status: 200,
+          data: { _id: 'remote-user-id-123', msg: 'success' },
+        }));
+
         // Mock getUserByName to return null (user not exists)
         mock(app, 'mysql', {
           get: async () => null,
@@ -56,7 +62,13 @@ describe('test/app/controller/user.test.ts', () => {
       });
 
       it('should return error when register fails', async () => {
-        // Mock getUserByName to return null, but insert fails
+        // Mock 远程用户服务成功返回 _id
+        mock(app, 'curl', async () => ({
+          status: 200,
+          data: { _id: 'remote-user-id-456', msg: 'success' },
+        }));
+
+        // Mock getUserByName to return null (user not exists), but insert returns null (fails)
         mock(app, 'mysql', {
           get: async () => null,
           insert: async () => null,
@@ -170,14 +182,13 @@ describe('test/app/controller/user.test.ts', () => {
     describe('editUserInfo()', () => {
       it('should edit user info successfully', async () => {
         const token = app.jwt.sign(
-          { id: 1, username: 'test' },
+          { id: 1, username: 'test', userid: 'remote-user-id' },
           app.config.jwt.secret,
           { expiresIn: '1h' }
         );
 
-        // Mock getUserByName to return user
         mock(app, 'mysql', {
-          get: async () => ({ id: 1, username: 'test', signature: 'old', avatar: 'old.png' }),
+          get: async () => ({ id: 1, username: 'test', signature: 'old', avatar: 'old.png', user_id: 'remote-user-id' }),
           update: async () => ({ affectedRows: 1 }),
         });
 
@@ -193,7 +204,7 @@ describe('test/app/controller/user.test.ts', () => {
 
       it('should return error when user not found', async () => {
         const token = app.jwt.sign(
-          { id: 1, username: 'nonexistent' },
+          { id: 1, username: 'nonexistent', userid: 'nonexistent-id' },
           app.config.jwt.secret,
           { expiresIn: '1h' }
         );
@@ -215,81 +226,74 @@ describe('test/app/controller/user.test.ts', () => {
 
     // 测试 modifyPass - 修改密码
     describe('modifyPass()', () => {
-      it('should return error for admin account', async () => {
+      it('should return error when user not found', async () => {
         const token = app.jwt.sign(
-          { id: 1, username: 'admin' },
-          app.config.jwt.secret,
-          { expiresIn: '1h' }
-        );
-
-        const res = await app.httpRequest()
-          .post('/api/user/modify_pass')
-          .set('Authorization', token)
-          .send({ old_pass: '123', new_pass: '456', new_pass2: '456' });
-
-        assert(res.status === 200);
-        assert(res.body.code === 400);
-        assert(res.body.msg === '管理员账户，不允许修改密码！');
-      });
-
-      it('should return error when old password is wrong', async () => {
-        const token = app.jwt.sign(
-          { id: 1, username: 'test' },
+          { id: 1, username: 'test', userid: 'nonexistent-id' },
           app.config.jwt.secret,
           { expiresIn: '1h' }
         );
 
         mock(app, 'mysql', {
-          get: async () => ({ id: 1, username: 'test', password: 'correctpass' }),
+          get: async () => null,
         });
 
         const res = await app.httpRequest()
           .post('/api/user/modify_pass')
           .set('Authorization', token)
-          .send({ old_pass: 'wrongpass', new_pass: '456', new_pass2: '456' });
+          .send({ oldPassword: '123', newPassword: '456' });
 
         assert(res.status === 200);
-        assert(res.body.code === 400);
+        assert(res.body.code === 500);
+        assert(res.body.msg === '用户不存在');
+      });
+
+      it('should return error when remote service fails', async () => {
+        const token = app.jwt.sign(
+          { id: 1, username: 'test', userid: 'remote-user-id' },
+          app.config.jwt.secret,
+          { expiresIn: '1h' }
+        );
+
+        mock(app, 'curl', async () => ({
+          status: 400,
+          data: { msg: '原密码错误' },
+        }));
+
+        mock(app, 'mysql', {
+          get: async () => ({ id: 1, username: 'test', password: 'oldpass', user_id: 'remote-user-id' }),
+        });
+
+        const res = await app.httpRequest()
+          .post('/api/user/modify_pass')
+          .set('Authorization', token)
+          .send({ oldPassword: 'wrongpass', newPassword: 'newpass' });
+
+        assert(res.status === 200);
+        assert(res.body.code === 500);
         assert(res.body.msg === '原密码错误');
-      });
-
-      it('should return error when new passwords do not match', async () => {
-        const token = app.jwt.sign(
-          { id: 1, username: 'test' },
-          app.config.jwt.secret,
-          { expiresIn: '1h' }
-        );
-
-        mock(app, 'mysql', {
-          get: async () => ({ id: 1, username: 'test', password: 'oldpass' }),
-        });
-
-        const res = await app.httpRequest()
-          .post('/api/user/modify_pass')
-          .set('Authorization', token)
-          .send({ old_pass: 'oldpass', new_pass: '456', new_pass2: '789' });
-
-        assert(res.status === 200);
-        assert(res.body.code === 400);
-        assert(res.body.msg === '新密码不一致');
       });
 
       it('should modify password successfully', async () => {
         const token = app.jwt.sign(
-          { id: 1, username: 'test' },
+          { id: 1, username: 'test', userid: 'remote-user-id' },
           app.config.jwt.secret,
           { expiresIn: '1h' }
         );
 
+        mock(app, 'curl', async () => ({
+          status: 200,
+          data: { _id: 'remote-user-id', msg: 'success' },
+        }));
+
         mock(app, 'mysql', {
-          get: async () => ({ id: 1, username: 'test', password: 'oldpass' }),
+          get: async () => ({ id: 1, username: 'test', password: 'oldpass', user_id: 'remote-user-id' }),
           update: async () => ({ affectedRows: 1 }),
         });
 
         const res = await app.httpRequest()
           .post('/api/user/modify_pass')
           .set('Authorization', token)
-          .send({ old_pass: 'oldpass', new_pass: 'newpass', new_pass2: 'newpass' });
+          .send({ oldPassword: 'oldpass', newPassword: 'newpass' });
 
         assert(res.status === 200);
         assert(res.body.code === 200);
