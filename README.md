@@ -114,7 +114,7 @@ MYSQL_PASSWORD=your_password
 MYSQL_DATABASE=kaikaio_booking
 
 # 应用
-APP_PORT=7001
+APP_PORT=7009
 ```
 
 ### 初始化数据库
@@ -129,7 +129,7 @@ npm run autod
 npm run dev
 ```
 
-服务默认运行在 `http://localhost:7001`
+服务默认运行在 `http://localhost:7009`
 
 ### 其他命令
 
@@ -223,7 +223,7 @@ npm run lint         #   代码检查
 docker build -t kaikaio-booking-server .
 
 # 运行容器
-docker run -p 7001:7001 --name kaikaio-booking-server kaikaio-booking-server
+docker run -p 7009:7009 --name kaikaio-booking-server kaikaio-booking-server
 ```
 
 ### 环境变量

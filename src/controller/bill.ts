@@ -14,6 +14,54 @@ interface BillItem {
 }
 
 export default class BillController extends Controller {
+  /**
+   * @swagger
+   * /api/bill/list:
+   *   get:
+   *     summary: 获取账单列表
+   *     tags: [Bill]
+   *     security:
+   *       - BearerAuth: []
+   *     parameters:
+   *       - in: query
+   *         name: start
+   *         schema:
+   *           type: string
+   *         description: 开始日期
+   *       - in: query
+   *         name: end
+   *         schema:
+   *           type: string
+   *         description: 结束日期
+   *       - in: query
+   *         name: page
+   *         schema:
+   *           type: integer
+   *         description: 页码
+   *       - in: query
+   *         name: page_size
+   *         schema:
+   *           type: integer
+   *           default: 10
+   *         description: 每页数量
+   *       - in: query
+   *         name: type_id
+   *         schema:
+   *           type: string
+   *         description: 类型ID
+   *       - in: query
+   *         name: orderBy
+   *         schema:
+   *           type: string
+   *         description: 排序字段
+   *     responses:
+   *       200:
+   *         description: 成功获取账单列表
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/ApiResponse'
+   */
   async list(): Promise<void> {
     const { ctx, app } = this;
     const {
@@ -108,6 +156,38 @@ export default class BillController extends Controller {
     }
   }
 
+  /**
+   * @swagger
+   * /api/bill/getEarliestItemDate:
+   *   get:
+   *     summary: 查询账单最早日期
+   *     tags: [Bill]
+   *     security:
+   *       - BearerAuth: []
+   *     parameters:
+   *       - in: query
+   *         name: type_id
+   *         schema:
+   *           type: string
+   *         description: 类型ID
+   *     responses:
+   *       200:
+   *         description: 成功获取最早日期
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 code:
+   *                   type: integer
+   *                   example: 200
+   *                 msg:
+   *                   type: string
+   *                   example: 请求成功
+   *                 data:
+   *                   type: string
+   *                   description: 最早日期
+   */
   async getEarliestItemDate(): Promise<void> {
     const { ctx, app } = this;
     const {
@@ -140,6 +220,39 @@ export default class BillController extends Controller {
     }
   }
 
+  /**
+   * @swagger
+   * /api/bill/getMonthList:
+   *   get:
+   *     summary: 查询月份列表
+   *     tags: [Bill]
+   *     security:
+   *       - BearerAuth: []
+   *     parameters:
+   *       - in: query
+   *         name: type_id
+   *         schema:
+   *           type: string
+   *         description: 类型ID
+   *     responses:
+   *       200:
+   *         description: 成功获取月份列表
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 code:
+   *                   type: integer
+   *                   example: 200
+   *                 msg:
+   *                   type: string
+   *                   example: 请求成功
+   *                 data:
+   *                   type: array
+   *                   items:
+   *                     type: string
+   */
   async getMonthList(): Promise<void> {
     const { ctx, app } = this;
     const {
@@ -172,6 +285,54 @@ export default class BillController extends Controller {
     }
   }
 
+  /**
+   * @swagger
+   * /api/bill/add:
+   *   post:
+   *     summary: 添加账单
+   *     tags: [Bill]
+   *     security:
+   *       - BearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - amount
+   *               - type_id
+   *               - type_name
+   *               - pay_type
+   *               - date
+   *             properties:
+   *               amount:
+   *                 type: number
+   *                 description: 金额
+   *               type_id:
+   *                 type: integer
+   *                 description: 类型ID
+   *               type_name:
+   *                 type: string
+   *                 description: 类型名称
+   *               pay_type:
+   *                 type: integer
+   *                 enum: [1, 2]
+   *                 description: '1: 支出, 2: 收入'
+   *               date:
+   *                 type: string
+   *                 description: 日期
+   *               remark:
+   *                 type: string
+   *                 description: 备注
+   *     responses:
+   *       200:
+   *         description: 添加成功
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/ApiResponse'
+   */
   async add(): Promise<void> {
     const { ctx, app } = this;
     const { amount, type_id, type_name, pay_type, remark = '', date, client_local_id = '' } = ctx.request.body as {
@@ -224,6 +385,50 @@ export default class BillController extends Controller {
     }
   }
 
+  /**
+   * @swagger
+   * /api/bill/batchAdd:
+   *   post:
+   *     summary: 批量添加账单
+   *     tags: [Bill]
+   *     security:
+   *       - BearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: array
+   *             items:
+   *               type: object
+   *               required:
+   *                 - amount
+   *                 - type_id
+   *                 - type_name
+   *                 - pay_type
+   *                 - date
+   *               properties:
+   *                 amount:
+   *                   type: number
+   *                 type_id:
+   *                   type: integer
+   *                 type_name:
+   *                   type: string
+   *                 pay_type:
+   *                   type: integer
+   *                   enum: [1, 2]
+   *                 date:
+   *                   type: string
+   *                 remark:
+   *                   type: string
+   *     responses:
+   *       200:
+   *         description: 批量添加成功
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/ApiResponse'
+   */
   async batchAdd(): Promise<void> {
     const { ctx, app } = this;
     const list = ctx.request.body; // Expecting an array directly or a wrapper object
@@ -278,6 +483,38 @@ export default class BillController extends Controller {
     }
   }
 
+  /**
+   * @swagger
+   * /api/bill/detail:
+   *   get:
+   *     summary: 获取账单详情
+   *     tags: [Bill]
+   *     security:
+   *       - BearerAuth: []
+   *     parameters:
+   *       - in: query
+   *         name: id
+   *         schema:
+   *           type: integer
+   *         required: true
+   *         description: 账单ID
+   *     responses:
+   *       200:
+   *         description: 成功获取账单详情
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 code:
+   *                   type: integer
+   *                   example: 200
+   *                 msg:
+   *                   type: string
+   *                   example: 请求成功
+   *                 data:
+   *                   $ref: '#/components/schemas/Bill'
+   */
   async detail(): Promise<void> {
     const { ctx, app } = this;
     const { id = '' } = ctx.query as { id?: string };
@@ -321,6 +558,51 @@ export default class BillController extends Controller {
     }
   }
 
+  /**
+   * @swagger
+   * /api/bill/update:
+   *   post:
+   *     summary: 更新账单
+   *     tags: [Bill]
+   *     security:
+   *       - BearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - id
+   *               - amount
+   *               - type_id
+   *               - type_name
+   *               - pay_type
+   *               - date
+   *             properties:
+   *               id:
+   *                 type: integer
+   *               amount:
+   *                 type: number
+   *               type_id:
+   *                 type: integer
+   *               type_name:
+   *                 type: string
+   *               pay_type:
+   *                 type: integer
+   *                 enum: [1, 2]
+   *               date:
+   *                 type: string
+   *               remark:
+   *                 type: string
+   *     responses:
+   *       200:
+   *         description: 更新成功
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/ApiResponse'
+   */
   async update(): Promise<void> {
     const { ctx, app } = this;
     const { id, amount, type_id, type_name, date, pay_type, remark = '', client_local_id = '' } = ctx.request.body as {
@@ -375,6 +657,33 @@ export default class BillController extends Controller {
     }
   }
 
+  /**
+   * @swagger
+   * /api/bill/delete:
+   *   post:
+   *     summary: 删除账单
+   *     tags: [Bill]
+   *     security:
+   *       - BearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - id
+   *             properties:
+   *               id:
+   *                 type: integer
+   *     responses:
+   *       200:
+   *         description: 删除成功
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/ApiResponse'
+   */
   async delete(): Promise<void> {
     const { ctx, app } = this;
     const { id } = ctx.request.body as { id: number };
@@ -417,6 +726,53 @@ export default class BillController extends Controller {
     }
   }
 
+  /**
+   * @swagger
+   * /api/bill/data:
+   *   get:
+   *     summary: 获取账单数据统计
+   *     tags: [Bill]
+   *     security:
+   *       - BearerAuth: []
+   *     parameters:
+   *       - in: query
+   *         name: start
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: 开始日期
+   *       - in: query
+   *         name: end
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: 结束日期
+   *     responses:
+   *       200:
+   *         description: 成功获取统计数据
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 code:
+   *                   type: integer
+   *                   example: 200
+   *                 msg:
+   *                   type: string
+   *                   example: 请求成功
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     total_expense:
+   *                       type: string
+   *                     total_income:
+   *                       type: string
+   *                     total_data:
+   *                       type: array
+   *                       items:
+   *                         type: object
+   */
   async data(): Promise<void> {
     const { ctx, app } = this;
     const { start = '', end = '' } = ctx.query as { start?: string; end?: string };
@@ -507,6 +863,46 @@ export default class BillController extends Controller {
     }
   }
 
+  /**
+   * @swagger
+   * /api/bill/queyBillByMonthly:
+   *   get:
+   *     summary: 按月查询账单
+   *     tags: [Bill]
+   *     security:
+   *       - BearerAuth: []
+   *     parameters:
+   *       - in: query
+   *         name: startMonth
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: 开始月份 (YYYY-MM)
+   *       - in: query
+   *         name: endMonth
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: 结束月份 (YYYY-MM)
+   *     responses:
+   *       200:
+   *         description: 成功获取账单数据
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 code:
+   *                   type: integer
+   *                   example: 200
+   *                 msg:
+   *                   type: string
+   *                   example: 请求成功
+   *                 data:
+   *                   type: array
+   *                   items:
+   *                     type: object
+   */
   async queyBillByMonthly(): Promise<void> {
     const { ctx, app } = this;
     const { startMonth = '', endMonth = '' } = ctx.query as { startMonth?: string; endMonth?: string };
@@ -572,6 +968,33 @@ export default class BillController extends Controller {
     }
   }
 
+  /**
+   * @swagger
+   * /api/bill/import:
+   *   post:
+   *     summary: 导入账单(CSV)
+   *     tags: [Bill]
+   *     security:
+   *       - BearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         multipart/form-data:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               file:
+   *                 type: string
+   *                 format: binary
+   *                 description: CSV文件
+   *     responses:
+   *       200:
+   *         description: 导入成功
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/ApiResponse'
+   */
   async import(): Promise<void> {
     const { ctx, app } = this;
     const files = ctx.request.files;

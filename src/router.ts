@@ -3,6 +3,9 @@ import { Application } from 'egg';
 export default (app: Application): void => {
   const { router, controller, middleware } = app;
   const _jwt = middleware.jwtErr({ secret: app.config.jwt.secret });
+
+  // 初始化 Swagger API 文档
+  require('./middleware/swagger').default(app);
   router.post('/api/user/login', controller.user.login);
   router.post('/api/user/register', controller.user.register); // 注册
   router.get('/api/user/get_userinfo', _jwt, controller.user.getUserInfo); // 获取用户信息
