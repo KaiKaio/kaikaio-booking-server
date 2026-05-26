@@ -43,4 +43,5 @@ export default (app: Application): void => {
   router.post('/api/upload/upload', controller.upload.upload); // 上传文件
 
   router.post('/api/user/verify', controller.user.verify); // 验证token
+  router.get('/api/user/public_key', controller.user.getPublicKey); // 获取公钥
 };

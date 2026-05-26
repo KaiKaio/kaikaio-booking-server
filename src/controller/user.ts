@@ -1,5 +1,5 @@
 import { Controller } from 'egg';
-import { User, ApiResponse, JwtPayload } from '../types';
+import { User, ApiResponse } from '../types';
 import { processUploadFile } from '../utils/upload';
 
 const defaultAvatar = 'http://s.yezgea02.com/1615973940679/WeChat77d6d2ac093e24b8013f40d1f2fa98a2.png';
@@ -165,47 +165,42 @@ export default class UserController extends Controller {
    *                       type: string
    */
   async login(): Promise<void> {
-    // app 为全局属性，相当于所有的插件方法都植入到了 app 对象
     const { ctx, app } = this;
     const { username, password } = ctx.request.body as { username: string; password: string };
-    // 根据用户名，在数据库查找相对应的id操作
-    const userInfo = await ctx.service.user.getUserByName(username);
-    // 没找到说明没有该用户
-    if (!userInfo || !userInfo.id) {
+
+    if (!username || !password) {
       ctx.body = {
         code: 500,
-        msg: '账号不存在',
+        msg: '账号密码不能为空',
         data: null,
       } as ApiResponse;
       return;
     }
 
-    if (userInfo && password !== userInfo.password) {
+    try {
+      const remoteServiceUrl = process.env.REMOTE_USER_SERVICE_URL || 'http://127.0.0.1:4000';
+      const remoteResponse = await app.curl<{
+        code: number;
+        msg?: string;
+        message?: string;
+        token?: string;
+        data?: { token: string };
+      }>(`${remoteServiceUrl}/api/user/login`, {
+        method: 'POST',
+        contentType: 'json',
+        data: { userName: username, password },
+        dataType: 'json',
+        timeout: 10000,
+      });
+
+      ctx.body = remoteResponse.data;
+    } catch (error: any) {
       ctx.body = {
         code: 500,
-        msg: '账号密码错误',
+        msg: '无法连接到远程用户服务',
         data: null,
       } as ApiResponse;
-      return;
     }
-
-    // 生成 token 加盐
-    const token = app.jwt.sign(
-      {
-        id: userInfo.id,
-        username: userInfo.username,
-      } as JwtPayload,
-      app.config.jwt.secret,
-      { expiresIn: app.config.jwt.sign.expiresIn }
-    );
-
-    ctx.body = {
-      code: 200,
-      message: '登录成功',
-      data: {
-        token,
-      },
-    };
   }
 
   /**
@@ -558,6 +553,17 @@ export default class UserController extends Controller {
       msg: '上传成功',
       data: {
         url: fileUrl,
+      },
+    };
+  }
+
+  async getPublicKey(): Promise<void> {
+    const { ctx } = this;
+    ctx.body = {
+      code: 200,
+      msg: 'success',
+      data: {
+        publicKey: process.env.JWT_PUBLIC_KEY || '',
       },
     };
   }
