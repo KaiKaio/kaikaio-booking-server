@@ -44,4 +44,6 @@ export default (app: Application): void => {
 
   router.post('/api/user/verify', controller.user.verify); // 验证token
   router.get('/api/user/public_key', controller.user.getPublicKey); // 获取公钥
+  router.post('/api/user/refresh', controller.user.refresh); // 刷新Token
+  router.post('/api/user/logout', controller.user.logout); // 用户登出
 };
