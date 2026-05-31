@@ -182,9 +182,8 @@ export default class UserController extends Controller {
       const remoteResponse = await app.curl<{
         code: number;
         msg?: string;
-        message?: string;
-        token?: string;
-        data?: { token: string };
+        accessToken?: string;
+        refreshToken?: string;
       }>(`${remoteServiceUrl}/api/user/login`, {
         method: 'POST',
         contentType: 'json',
@@ -195,6 +194,7 @@ export default class UserController extends Controller {
 
       ctx.body = remoteResponse.data;
     } catch (error: any) {
+      console.log(error, '=> login error');
       ctx.body = {
         code: 500,
         msg: '无法连接到远程用户服务',
@@ -566,6 +566,108 @@ export default class UserController extends Controller {
         publicKey: process.env.JWT_PUBLIC_KEY || '',
       },
     };
+  }
+
+  /**
+   * @swagger
+   * /api/user/refresh:
+   *   post:
+   *     summary: 刷新Token
+   *     tags: [User]
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - refreshToken
+   *             properties:
+   *               refreshToken:
+   *                 type: string
+   *                 description: 刷新令牌
+   *     responses:
+   *       200:
+   *         description: 刷新成功
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 code:
+   *                   type: integer
+   *                 msg:
+   *                   type: string
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     accessToken:
+   *                       type: string
+   *                     refreshToken:
+   *                       type: string
+   */
+  async refresh(): Promise<void> {
+    const { ctx, app } = this;
+
+    try {
+      const remoteServiceUrl = process.env.REMOTE_USER_SERVICE_URL || 'http://127.0.0.1:4000';
+      const remoteResponse = await app.curl(`${remoteServiceUrl}/api/user/refresh`, {
+        method: 'POST',
+        contentType: 'json',
+        data: ctx.request.body,
+        dataType: 'json',
+        timeout: 10000,
+      });
+
+      ctx.body = remoteResponse.data;
+    } catch (error: any) {
+      console.log(error, '=> refresh error');
+      ctx.body = {
+        code: 500,
+        msg: '无法连接到远程用户服务',
+        data: null,
+      } as ApiResponse;
+    }
+  }
+
+  /**
+   * @swagger
+   * /api/user/logout:
+   *   post:
+   *     summary: 用户登出
+   *     tags: [User]
+   *     security:
+   *       - BearerAuth: []
+   *     responses:
+   *       200:
+   *         description: 登出成功
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/ApiResponse'
+   */
+  async logout(): Promise<void> {
+    const { ctx, app } = this;
+
+    try {
+      const remoteServiceUrl = process.env.REMOTE_USER_SERVICE_URL || 'http://127.0.0.1:4000';
+      const remoteResponse = await app.curl(`${remoteServiceUrl}/api/user/logout`, {
+        method: 'POST',
+        contentType: 'json',
+        data: ctx.request.body,
+        dataType: 'json',
+        timeout: 10000,
+      });
+
+      ctx.body = remoteResponse.data;
+    } catch (error: any) {
+      console.log(error, '=> logout error');
+      ctx.body = {
+        code: 500,
+        msg: '无法连接到远程用户服务',
+        data: null,
+      } as ApiResponse;
+    }
   }
 }
 
