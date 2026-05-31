@@ -648,16 +648,13 @@ export default class UserController extends Controller {
    */
   async logout(): Promise<void> {
     const { ctx, app } = this;
-    const token = ctx.request.header.authorization as string;
 
     try {
       const remoteServiceUrl = process.env.REMOTE_USER_SERVICE_URL || 'http://127.0.0.1:4000';
       const remoteResponse = await app.curl(`${remoteServiceUrl}/api/user/logout`, {
         method: 'POST',
         contentType: 'json',
-        headers: {
-          Authorization: token,
-        },
+        data: ctx.request.body,
         dataType: 'json',
         timeout: 10000,
       });
