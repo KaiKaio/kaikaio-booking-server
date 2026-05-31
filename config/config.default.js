@@ -2,6 +2,8 @@
 
 'use strict';
 
+require('dotenv').config();
+
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -15,7 +17,7 @@ module.exports = appInfo => {
    **/
   const config = exports = {};
 
-  let public_key = process.env.JWT_PUBLIC_KEY || '-----BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzNwjct4i6phtF8ZkPqCM5mw6yshcKt3S/LItlcHTWDF82uLGW8rzc5lpsgj6KI6FKyXzu0ahPboFKUEeKg/hXws68XzPKLHnZcSVM+tB1TYnP73U/K436j/MZMrvXKo5u+CxlI6qSR/qmNs626rp4OwgyJfK9ybYIg+FbxlKOINMjdYZtw8a+2BrFjtr5WNaeHwIbanre/hUE7wzA68FcgWk2tQ7/plZONsL3om5r9ImPC5beV7Z5tAR12lR7S+dIcJzYL/4sMXOWsXAjzAcrFzKpLbOGBPWCxzhC9Z5cnL2o6XulQyo8w3h9J2jkYVhRuvvTqJdqcrFmauJt+5t7QIDAQAB-----END PUBLIC KEY-----';
+  let public_key = process.env.JWT_PUBLIC_KEY || '';
 
   if (!public_key) {
     const keyPath = path.join(appInfo.baseDir, 'config/ssl_key/rsa_public_key.pem');
