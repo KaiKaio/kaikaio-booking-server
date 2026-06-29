@@ -16,32 +16,6 @@ export default (app: App) => {
     app.logger.info('[Database] MySQL connected successfully');
   }
 
-  //   const server = app.server;
-  //   if (!server) return;
-
-  //   const wss = new WebSocketServer({ noServer: true });
-
-  //   server.on('upgrade', (request, socket, head) => {
-  //     if (request.url === '/ws') {
-  //       wss.handleUpgrade(request, socket, head, ws => {
-  //         wss.emit('connection', ws, request);
-  //       });
-  //     } else {
-  //       socket.destroy();
-  //     }
-  //   });
-
-  //   wss.on('connection', ws => {
-  //     app.punchWsClients.add(ws);
-  //     ws.on('close', () => {
-  //       app.punchWsClients.delete(ws);
-  //     });
-  //     ws.on('error', () => {
-  //       app.punchWsClients.delete(ws);
-  //     });
-  //   });
-  //   app.punchWss = wss;
-
   app.once('server', (server: App['server']) => {
     console.log('HTTP Server Ready');
 
