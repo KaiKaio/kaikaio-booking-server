@@ -52,8 +52,8 @@
   "scripts": {
     "start": "egg-scripts start --daemon --title=egg-server-kaikaio-booking-server",
     "stop": "egg-scripts stop --title=egg-server-kaikaio-booking-server",
-    "dev": "concurrently \"npm run tsc -- --watch\" \"egg-bin dev\"",
-    "dev:no-db": "cross-env ENABLE_DATABASE=false concurrently \"npm run tsc -- --watch\" \"egg-bin dev\"",
+    "dev": " mkdir -p app/public && cp -r src/public/* app/public/ && concurrently \"npm run tsc -- --watch\" \"egg-bin dev\"",
+    "dev:no-db": " mkdir -p app/public && cp -r src/public/* app/public/ && cross-env ENABLE_DATABASE=false concurrently \"npm run tsc -- --watch\" \"egg-bin dev\"",
     "debug": "egg-bin debug -r ts-node/register",
     "test": "npm run lint -- --fix && npm run test-local",
     "test-local": "cross-env EGG_SERVER_ENV=unittest egg-bin test --ts",
@@ -63,7 +63,7 @@
     "autod": "autod",
     "tsc": "tsc",
     "clean": "rm -rf app/*",
-    "build": "npm run clean && npm run tsc"
+    "build": "npm run clean && npm run tsc && mkdir -p app/public && cp -r src/public/* app/public/"
   },
   "ci": {
     "version": "10"
