@@ -13,6 +13,7 @@ h1 { text-align: center; font-size: 20px; margin-bottom: 24px; color: #00d4ff; l
 .field label { display: block; font-size: 12px; color: #888; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
 .field select, .field input { width: 100%; padding: 8px 12px; background: #16213e; border: 1px solid #333; color: #e0e0e0; border-radius: 4px; font-size: 14px; font-family: inherit; outline: none; }
 .field select:focus, .field input:focus { border-color: #00d4ff; }
+.field .auto-value { width: 100%; padding: 8px 12px; background: #16213e; border: 1px solid #333; color: #666; border-radius: 4px; font-size: 14px; font-family: inherit; }
 .btn-group { display: flex; gap: 12px; margin: 20px 0; }
 .btn { flex: 1; padding: 10px; border: none; border-radius: 4px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity 0.2s; }
 .btn:hover { opacity: 0.85; }
@@ -42,8 +43,8 @@ h1 { text-align: center; font-size: 20px; margin-bottom: 24px; color: #00d4ff; l
   </div>
 
   <div class="field">
-    <label>Probe Port</label>
-    <input id="probePort" type="number" value="22" />
+    <label>Probe Strategy</label>
+    <div class="auto-value">Auto</div>
   </div>
 
   <div class="field">
@@ -57,7 +58,7 @@ h1 { text-align: center; font-size: 20px; margin-bottom: 24px; color: #00d4ff; l
   </div>
 
   <div class="btn-group">
-    <button class="btn btn-start" id="btnStart">开始尝试连接</button>
+    <button class="btn btn-start" id="btnStart">开始探测</button>
     <button class="btn btn-stop" id="btnStop" disabled>停止</button>
   </div>
 
@@ -72,7 +73,6 @@ h1 { text-align: center; font-size: 20px; margin-bottom: 24px; color: #00d4ff; l
 
 <script>
 const nodeSelect = document.getElementById('nodeSelect');
-const probePort = document.getElementById('probePort');
 const retryInterval = document.getElementById('retryInterval');
 const timeout = document.getElementById('timeout');
 const btnStart = document.getElementById('btnStart');
@@ -136,7 +136,6 @@ async function loadNodes() {
 btnStart.addEventListener('click', async () => {
   const body = {
     nodeId: nodeSelect.value,
-    probePort: parseInt(probePort.value) || undefined,
     retryInterval: parseInt(retryInterval.value) || undefined,
     timeout: parseInt(timeout.value) || undefined,
   };

@@ -13,8 +13,8 @@ export default class PunchController extends Controller {
 
   async start() {
     const { ctx } = this;
-    const { nodeId, probePort, retryInterval, timeout } = ctx.request.body;
-    const result = await ctx.service.punch.start(nodeId, probePort, retryInterval, timeout);
+    const { nodeId, retryInterval, timeout } = ctx.request.body;
+    const result = await ctx.service.punch.start(nodeId, retryInterval, timeout);
     ctx.body = result;
   }
 
