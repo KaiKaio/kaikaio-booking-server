@@ -1,8 +1,7 @@
-import { WebSocketServer } from 'ws';
-import type { App } from './src/types/application';
+const { WebSocketServer } = require('ws');
 
-export default (app: App) => {
-  console.log('[App] App.ts Loaded');
+module.exports = app => {
+  console.log('[App] App.js Loaded');
 
   app.punchTask = null;
   app.punchWsClients = new Set();
@@ -16,7 +15,7 @@ export default (app: App) => {
     app.logger.info('[Database] MySQL connected successfully');
   }
 
-  app.once('server', (server: App['server']) => {
+  app.once('server', server => {
     console.log('HTTP Server Ready');
 
     const wss = new WebSocketServer({

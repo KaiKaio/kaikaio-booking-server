@@ -29,5 +29,4 @@ app/**/*.d.ts.map
 app/**/*.js.map
 !app/public/
 
-/app.js
 /app.js.map

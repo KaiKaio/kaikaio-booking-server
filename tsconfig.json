@@ -12,7 +12,7 @@
     "declarationMap": false,
     "sourceMap": true,
     "outDir": "./app",
-    "rootDir": ".",
+    "rootDir": "./src",
     "ignoreDeprecations": "5.0",
     "types": ["node", "mocha", "power-assert"]
   },
