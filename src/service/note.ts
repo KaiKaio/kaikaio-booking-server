@@ -2,8 +2,17 @@ import { Service } from 'egg';
 import { Note, MysqlResult } from '../types';
 
 export default class NoteService extends Service {
+  private checkDatabase(): boolean {
+    if (!this.app.mysql) {
+      this.logger.warn('Database is disabled');
+      return false;
+    }
+    return true;
+  }
+
   // 获取笔记列表
   async list(id: number): Promise<Note[] | null> {
+    if (!this.checkDatabase()) return null;
     const { app } = this;
     const QUERY_STR = 'id, content, create_time, update_time';
     const sql = 'SELECT ' + QUERY_STR + ' FROM note WHERE user_id = ? ORDER BY create_time DESC';
@@ -18,6 +27,7 @@ export default class NoteService extends Service {
 
   // 新增笔记
   async add(params: Omit<Note, 'id'>): Promise<MysqlResult | null> {
+    if (!this.checkDatabase()) return null;
     const { app } = this;
     try {
       const result = await app.mysql.insert('note', params);
@@ -30,6 +40,7 @@ export default class NoteService extends Service {
 
   // 删除笔记
   async delete(id: number, user_id: number): Promise<MysqlResult | null> {
+    if (!this.checkDatabase()) return null;
     const { app } = this;
     try {
       const result = await app.mysql.delete('note', {
@@ -45,6 +56,7 @@ export default class NoteService extends Service {
 
   // 修改
   async update(params: Note): Promise<MysqlResult | null> {
+    if (!this.checkDatabase()) return null;
     const { app } = this;
     try {
       const result = await app.mysql.update(

@@ -6,6 +6,7 @@ import 'egg';
 import ExportBill from '../../../src/controller/bill';
 import ExportBooks from '../../../src/controller/books';
 import ExportNote from '../../../src/controller/note';
+import ExportPunch from '../../../src/controller/punch';
 import ExportType from '../../../src/controller/type';
 import ExportUpload from '../../../src/controller/upload';
 import ExportUser from '../../../src/controller/user';
@@ -15,6 +16,7 @@ declare module 'egg' {
     bill: ExportBill;
     books: ExportBooks;
     note: ExportNote;
+    punch: ExportPunch;
     type: ExportType;
     upload: ExportUpload;
     user: ExportUser;
