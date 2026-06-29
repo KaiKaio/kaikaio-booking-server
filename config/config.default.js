@@ -42,7 +42,7 @@ module.exports = appInfo => {
   config.middleware = [ 'apiLogger' ];
 
   config.apiLogger = {
-    excludePaths: [ '/', '/health', '/favicon.ico' ],
+    excludePaths: [ '/', '/health', '/favicon.ico', '/ws', '/api/nodes', '/api/punch/start', '/api/punch/stop', '/api/punch/status' ],
     sampleRate: 1,
   };
 
@@ -82,6 +82,7 @@ module.exports = appInfo => {
   };
 
   exports.mysql = {
+    enable: process.env.ENABLE_DATABASE !== 'false',
     client: {
       connectionLimit: 3, // 最大连接数
       waitForConnections: true,

@@ -10,6 +10,7 @@ type AutoInstanceType<T, U = T extends CanExportFunc ? T : T extends AnyFunc ? R
 import ExportBill from '../../../src/service/bill';
 import ExportBooks from '../../../src/service/books';
 import ExportNote from '../../../src/service/note';
+import ExportPunch from '../../../src/service/punch';
 import ExportType from '../../../src/service/type';
 import ExportUser from '../../../src/service/user';
 
@@ -18,6 +19,7 @@ declare module 'egg' {
     bill: AutoInstanceType<typeof ExportBill>;
     books: AutoInstanceType<typeof ExportBooks>;
     note: AutoInstanceType<typeof ExportNote>;
+    punch: AutoInstanceType<typeof ExportPunch>;
     type: AutoInstanceType<typeof ExportType>;
     user: AutoInstanceType<typeof ExportUser>;
   }

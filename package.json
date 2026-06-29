@@ -18,7 +18,8 @@
     "egg-scripts": "^3.1.0",
     "mkdirp": "^1.0.4",
     "node-csv": "^0.1.2",
-    "swagger-jsdoc": "^6.2.8"
+    "swagger-jsdoc": "^6.2.8",
+    "ws": "^8.21.0"
   },
   "devDependencies": {
     "@eggjs/tsconfig": "^3.1.0-beta.2",
@@ -29,6 +30,7 @@
     "@types/node": "^25.5.0",
     "@types/power-assert": "^1.5.12",
     "@types/swagger-jsdoc": "^6.0.4",
+    "@types/ws": "^8.18.1",
     "@typescript-eslint/parser": "^8.57.2",
     "autod": "^3.0.1",
     "autod-egg": "^1.1.0",
@@ -51,6 +53,7 @@
     "start": "egg-scripts start --daemon --title=egg-server-kaikaio-booking-server",
     "stop": "egg-scripts stop --title=egg-server-kaikaio-booking-server",
     "dev": "concurrently \"npm run tsc -- --watch\" \"egg-bin dev\"",
+    "dev:no-db": "cross-env ENABLE_DATABASE=false concurrently \"npm run tsc -- --watch\" \"egg-bin dev\"",
     "debug": "egg-bin debug -r ts-node/register",
     "test": "npm run lint -- --fix && npm run test-local",
     "test-local": "cross-env EGG_SERVER_ENV=unittest egg-bin test --ts",

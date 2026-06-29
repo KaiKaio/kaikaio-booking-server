@@ -17,6 +17,7 @@
     "types": ["node", "mocha", "power-assert"]
   },
   "include": [
+    "app.ts",
     "src/**/*",
     "typings/**/*.ts",
     "typings/**/*.d.ts"

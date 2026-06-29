@@ -46,4 +46,11 @@ export default (app: Application): void => {
   router.get('/api/user/public_key', controller.user.getPublicKey); // 获取公钥
   router.post('/api/user/refresh', controller.user.refresh); // 刷新Token
   router.post('/api/user/logout', controller.user.logout); // 用户登出
+
+  // ZeroTier Punch
+  router.get('/punch-local-network', controller.punch.index);
+  router.get('/api/nodes', controller.punch.nodes);
+  router.post('/api/punch/start', controller.punch.start);
+  router.post('/api/punch/stop', controller.punch.stop);
+  router.get('/api/punch/status', controller.punch.status);
 };

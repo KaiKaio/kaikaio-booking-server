@@ -26,6 +26,14 @@ interface BillListResult {
 }
 
 export default class BillService extends Service {
+  private checkDatabase(): boolean {
+    if (!this.app.mysql) {
+      this.logger.warn('Database is disabled');
+      return false;
+    }
+    return true;
+  }
+
   // 获取账单列表
   async list({
     id,
@@ -37,6 +45,7 @@ export default class BillService extends Service {
     isAll = false,
     type_id = '',
   }: ListParams): Promise<BillListResult | null> {
+    if (!this.checkDatabase()) return null;
     const { app } = this;
 
     // 验证 orderBy（白名单）
@@ -117,6 +126,7 @@ export default class BillService extends Service {
     type_id?: string;
     user_id?: string;
   }): Promise<any[] | null> {
+    if (!this.checkDatabase()) return null;
     const { app } = this;
     try {
       let sql = 'SELECT MIN(date) as EarliestDate FROM bill WHERE user_id = ?';
@@ -142,6 +152,7 @@ export default class BillService extends Service {
     type_id?: string;
     user_id?: string;
   }): Promise<string[] | null> {
+    if (!this.checkDatabase()) return null;
     const { app } = this;
     try {
       let sql = 'SELECT DISTINCT YEAR(date) as year, MONTH(date) as month FROM bill WHERE user_id = ?';
@@ -164,6 +175,7 @@ export default class BillService extends Service {
   }
 
   async add(params: Bill): Promise<Bill | null> {
+    if (!this.checkDatabase()) return null;
     const { app } = this;
     try {
       await app.mysql.query('SET NAMES utf8mb4');
@@ -180,6 +192,7 @@ export default class BillService extends Service {
   }
 
   async batchAdd(params: Bill[]): Promise<MysqlResult | Error> {
+    if (!this.checkDatabase()) return new Error('Database is disabled');
     const { app } = this;
     try {
       await app.mysql.query('SET NAMES utf8mb4');
@@ -192,6 +205,7 @@ export default class BillService extends Service {
   }
 
   async detail(id: number, user_id: number): Promise<Bill | null> {
+    if (!this.checkDatabase()) return null;
     const { app } = this;
     try {
       const result = await app.mysql.get('bill', { id, user_id });
@@ -203,6 +217,7 @@ export default class BillService extends Service {
   }
 
   async update(params: Bill): Promise<Bill | null> {
+    if (!this.checkDatabase()) return null;
     const { app } = this;
     try {
       await app.mysql.update(
@@ -224,6 +239,7 @@ export default class BillService extends Service {
   }
 
   async delete(id: number, user_id: number): Promise<MysqlResult | null> {
+    if (!this.checkDatabase()) return null;
     const { app } = this;
     try {
       const result = await app.mysql.delete('bill', {
@@ -242,6 +258,7 @@ export default class BillService extends Service {
     startMonth,
     endMonth,
   }: MonthlyQueryParams): Promise<any[] | null> {
+    if (!this.checkDatabase()) return null;
     const { app } = this;
     try {
       const startStr = startMonth.length === 10 ? `${startMonth} 00:00:00` : startMonth;

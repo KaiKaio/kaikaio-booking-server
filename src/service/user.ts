@@ -2,8 +2,16 @@ import { Service } from 'egg';
 import { User, MysqlResult } from '../types';
 
 export default class UserService extends Service {
-  // 注册
+  private checkDatabase(): boolean {
+    if (!this.app.mysql) {
+      this.logger.warn('Database is disabled');
+      return false;
+    }
+    return true;
+  }
+
   async register(params: Omit<User, 'id'>): Promise<MysqlResult | null> {
+    if (!this.checkDatabase()) return null;
     const { app } = this;
     try {
       const result = await app.mysql.insert('user', params);
@@ -14,8 +22,8 @@ export default class UserService extends Service {
     }
   }
 
-  // 通过用户名获取用户信息
   async getUserByName(username: string): Promise<User | null> {
+    if (!this.checkDatabase()) return null;
     const { app } = this;
     try {
       const result = await app.mysql.get('user', { username });
@@ -26,8 +34,8 @@ export default class UserService extends Service {
     }
   }
 
-  // 通过 user_id 获取用户信息
   async getUserById(user_id: number): Promise<User | null> {
+    if (!this.checkDatabase()) return null;
     const { app } = this;
     try {
       const result = await app.mysql.get('user', { user_id });
@@ -39,6 +47,7 @@ export default class UserService extends Service {
   }
 
   async editUserInfo(params: User): Promise<MysqlResult | null> {
+    if (!this.checkDatabase()) return null;
     const { app } = this;
     try {
       const result = await app.mysql.update('user', {
@@ -54,6 +63,7 @@ export default class UserService extends Service {
   }
 
   async modifyPass(params: User): Promise<MysqlResult | null> {
+    if (!this.checkDatabase()) return null;
     const { app } = this;
     try {
       const result = await app.mysql.update('user', {

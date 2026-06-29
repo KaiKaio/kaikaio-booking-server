@@ -2,8 +2,17 @@ import { Service } from 'egg';
 import { BillType, MysqlResult } from '../types';
 
 export default class TypeService extends Service {
+  private checkDatabase(): boolean {
+    if (!this.app.mysql) {
+      this.logger.warn('Database is disabled');
+      return false;
+    }
+    return true;
+  }
+
   // 获取标签列表（仅用户自定义类型）
   async list(user_id: string): Promise<BillType[] | null> {
+    if (!this.checkDatabase()) return null;
     const { app } = this;
     const QUERY_STR = 'id, name, type, icon, user_id, is_system, background_color';
     const sql = `SELECT ${QUERY_STR} FROM type WHERE is_delete = 0 AND user_id = ? ORDER BY id ASC`;
@@ -18,6 +27,7 @@ export default class TypeService extends Service {
 
   // 获取单个类型详情
   async detail(id: number, user_id: string): Promise<BillType | null> {
+    if (!this.checkDatabase()) return null;
     const { app } = this;
     try {
       const result = await app.mysql.query<BillType[]>(
@@ -33,6 +43,7 @@ export default class TypeService extends Service {
 
   // 添加类型
   async add(params: BillType): Promise<MysqlResult | null> {
+    if (!this.checkDatabase()) return null;
     const { app } = this;
     try {
       await app.mysql.query('SET NAMES utf8mb4');
@@ -49,6 +60,7 @@ export default class TypeService extends Service {
 
   // 更新类型
   async update(params: BillType): Promise<MysqlResult | null> {
+    if (!this.checkDatabase()) return null;
     const { app } = this;
     try {
       const sql = 'UPDATE type SET name = ?, type = ?, icon = ? WHERE id = ? AND user_id = ? AND is_delete = 0';
@@ -62,6 +74,7 @@ export default class TypeService extends Service {
 
   // 软删除类型
   async delete(id: number, user_id: string): Promise<MysqlResult | null> {
+    if (!this.checkDatabase()) return null;
     const { app } = this;
     try {
       // 使用软删除，设置 is_delete = 1
@@ -76,6 +89,7 @@ export default class TypeService extends Service {
 
   // 批量复制系统预设类型给新用户（用于用户注册时初始化）
   async initUserTypes(user_id: string): Promise<MysqlResult | null> {
+    if (!this.checkDatabase()) return null;
     const { app } = this;
     try {
       // 查询所有系统预设类型（user_id='0' 且未删除）

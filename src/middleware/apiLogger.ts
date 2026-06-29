@@ -42,6 +42,10 @@ export default function apiLogger(options: {
     };
 
     setImmediate(() => {
+      if (!ctx.app.mysql) {
+        ctx.logger.warn('[apiLogger] Database is disabled, skip logging');
+        return;
+      }
       ctx.app.mysql.insert('api_logs', logData).catch((err: Error) => {
         ctx.logger.error('[apiLogger] insert failed:', err.message);
       });
