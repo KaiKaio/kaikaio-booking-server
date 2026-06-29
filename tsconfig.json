@@ -12,12 +12,11 @@
     "declarationMap": false,
     "sourceMap": true,
     "outDir": "./app",
-    "rootDir": "./src",
+    "rootDir": ".",
     "ignoreDeprecations": "5.0",
     "types": ["node", "mocha", "power-assert"]
   },
   "include": [
-    "app.ts",
     "src/**/*",
     "typings/**/*.ts",
     "typings/**/*.d.ts"
