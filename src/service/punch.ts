@@ -108,7 +108,8 @@ export default class PunchService extends Service {
 
   private broadcast(message: string) {
     const clients = this.appPunch.punchWsClients;
-    const data = JSON.stringify({ time: new Date().toLocaleTimeString(), message });
+    const status = this.getStatus();
+    const data = JSON.stringify({ time: new Date().toLocaleTimeString(), message, status });
     for (const client of clients) {
       try {
         client.send(data);
@@ -151,8 +152,8 @@ export default class PunchService extends Service {
     const task = this.appPunch.punchTask;
     if (task && task.running) {
       task.running = false;
-      this.broadcast('Stopped');
       this.appPunch.punchTask = null;
+      this.broadcast('Stopped');
     }
   }
 
@@ -166,9 +167,9 @@ export default class PunchService extends Service {
       if (!currentTask || !currentTask.running) return;
 
       if (Date.now() - startTime > totalTimeout * 1000) {
-        this.broadcast('Timeout (exceeded total timeout)');
         currentTask.running = false;
         app.punchTask = null;
+        this.broadcast('Timeout (exceeded total timeout)');
         return;
       }
 
@@ -178,10 +179,10 @@ export default class PunchService extends Service {
       try {
         const result = await strategy.probe(ip, probe);
         if (result) {
-          this.broadcast('Connected');
-          this.broadcast('Task Finished');
           currentTask.running = false;
           app.punchTask = null;
+          this.broadcast('Connected');
+          this.broadcast('Task Finished');
           return;
         }
         this.broadcast('Timeout');

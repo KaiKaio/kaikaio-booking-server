@@ -81,7 +81,6 @@ const statusText = document.getElementById('statusText');
 const logs = document.getElementById('logs');
 
 let ws = null;
-let pollingTimer = null;
 
 function addLog(time, message) {
   const line = document.createElement('div');
@@ -106,7 +105,13 @@ function connectWs() {
   ws.onmessage = function(e) {
     try {
       const d = JSON.parse(e.data);
-      addLog(d.time, d.message);
+      if (d.message) {
+        addLog(d.time, d.message);
+      }
+      if (d.status) {
+        statusText.textContent = d.status;
+        setRunning(d.status !== 'Idle');
+      }
     } catch {}
   };
   ws.onclose = function() {
@@ -114,7 +119,7 @@ function connectWs() {
   };
 }
 
-function pollStatus() {
+function fetchInitialStatus() {
   fetch('/api/punch/status').then(r => r.json()).then(d => {
     statusText.textContent = d.status;
     setRunning(d.status !== 'Idle');
@@ -161,7 +166,7 @@ btnStop.addEventListener('click', async () => {
 
 loadNodes();
 connectWs();
-pollingTimer = setInterval(pollStatus, 2000);
+fetchInitialStatus();
 </script>
 </body>
 </html>
